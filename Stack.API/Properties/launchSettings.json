@@ -26,7 +26,7 @@
       //  "applicationUrl": "http://192.168.8.153:5000", //Dason
       //  "applicationUrl": "http://192.168.117.134:5000", //Bezo
       "applicationUrl": "http://172.20.10.2:5000", //Hotspot
-      // "applicationUrl": "http://192.168.1.12:5000", //Home
+      // "applicationUrl": "http://192.168.1.6:5000", //Home
 
 
       "environmentVariables": {

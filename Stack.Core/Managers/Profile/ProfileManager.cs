@@ -2,7 +2,6 @@
 using Stack.DAL;
 using Stack.Entities.DatabaseEntities.UserProfile;
 using Stack.Entities.DomainEntities.Modules.Profile;
-using Stack.Entities.DomainEntities.Modules.UserProfile;
 using Stack.Entities.Enums.Modules.User;
 using Stack.Repository;
 using System;
@@ -34,38 +33,40 @@ namespace Stack.Core.Managers.Modules.UserProfile
             });
         }
 
-        public async Task<Profile> GetProfileByUserID(string userID)
+        public async Task<ProfileViewModel> ViewPersonalProfile(string userID)
         {
-            return await Task.Run(() =>
-            {
-                return context.Profiles
-                    .Where(t => t.UserID == userID)
-                    .Include(a => a.User)
-                    .FirstOrDefault();
-            });
-        }
+            var userProfile = await context.Users
+                .Where(u => u.Id == userID)
+                .Select(
+                    u =>
+                        new ProfileViewModel
+                        {
+                            UserID = u.Id,
+                            ReferenceNumber = u.ReferenceNumber,
+                            FullName = u.FullName
+                        }
+                )
+                .FirstOrDefaultAsync();
 
-        public async Task<Profile> GetProfile(long ID)
-        {
-            return await Task.Run(() =>
+            if (userProfile != null)
             {
-                return context.Profiles.Where(t => t.ID == ID).FirstOrDefault();
-            });
-        }
+                var userStats = await context.UserStats
+                    .Where(s => s.UserID == userID)
+                    .GroupBy(s => s.UserID)
+                    .Select(
+                        g =>
+                            new StatsViewModel
+                            {
+                                Wins = g.Sum(s => s.Wins),
+                                Loses = g.Sum(s => s.Loses)
+                            }
+                    )
+                    .FirstOrDefaultAsync();
 
-        string CleanPhoneNumber(string rawNumber)
-        {
-            //Remove spaces and "+" characters
-            string sanitizedNumber = Regex.Replace(rawNumber, @"[\s+]", "");
-
-            // If the number starts with "20", remove the "2" part
-            if (sanitizedNumber.StartsWith("20"))
-            {
-                sanitizedNumber = sanitizedNumber.Substring(1);
+                userProfile.Stats = userStats ?? new StatsViewModel { Wins = 0, Loses = 0 };
             }
 
-            return sanitizedNumber;
+            return userProfile;
         }
-
     }
 }

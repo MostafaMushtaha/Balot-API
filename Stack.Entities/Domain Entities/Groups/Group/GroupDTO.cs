@@ -19,7 +19,7 @@ namespace Stack.Entities.DomainEntities.Groups
             this.Status = (int)GroupStatus.Active;
             this.Name = Name;
             this.CreatedBy = UserID;
-            this.CreationDate = DateTime.UtcNow;
+            // this.CreationDate = DateTime.UtcNow;
         }
 
         public void AddOwner()

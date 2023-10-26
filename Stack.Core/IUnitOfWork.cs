@@ -1,5 +1,7 @@
+using Stack.Core.Managers.Games;
 using Stack.Core.Managers.Groups;
 using Stack.Core.Managers.Modules.Auth;
+using Stack.Core.Managers.Modules.Games;
 using Stack.Core.Managers.Modules.Groups;
 using Stack.Core.Managers.Modules.UserProfile;
 using Stack.Core.Managers.Social;
@@ -18,7 +20,12 @@ namespace Stack.Core
         public RegistrationRequestManager RegistrationRequestManager { get; }
         public ProfileManager ProfileManager { get; }
         public FriendsManager FriendsManager { get; }
+        public StatsManager StatsManager { get; }
+        public UserStatsManager UserStatsManager { get; }
         public GroupsManager GroupsManager { get; }
+        public GameManager GameManager { get; }
+        public GameMembersManager GameMembersManager { get; }
+        public GameRoundsManager GameRoundsManager { get; }
         public GroupMembersManager GroupMembersManager { get; }
         public ProfileSettingsManager ProfileSettingsManager { get; }
         public NotificationsManager NotificationsManager { get; }

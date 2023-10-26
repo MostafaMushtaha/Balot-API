@@ -60,7 +60,6 @@ namespace Stack.Core.Managers.Modules.Groups
                 .Where(t => t.UserID == UserID)
                 .OrderBy(t => t.CreationDate)
                 .Select(t => new UserGroupsModel { GroupID = t.GroupID, Name = t.Group.Name })
-                .Distinct()
                 .ToListAsync();
         }
 
@@ -106,6 +105,25 @@ namespace Stack.Core.Managers.Modules.Groups
             {
                 return false;
             }
+        }
+
+        public async Task<List<Group_MemberDTO>> GetSelectedMembers(long groupId)
+        {
+            return await dbSet
+                .Where(gm => gm.GroupID == groupId)
+                .Select(
+                    gm =>
+                        new Group_MemberDTO
+                        {
+                            ID = gm.ID,  
+                            FullName = gm.User.FullName,
+                            UserID = gm.UserID,
+                            GroupID = gm.GroupID,
+                            IsOwner = gm.IsOwner,
+                            IsSelected = gm.IsSelected,
+                        }
+                )
+                .ToListAsync();
         }
     }
 }

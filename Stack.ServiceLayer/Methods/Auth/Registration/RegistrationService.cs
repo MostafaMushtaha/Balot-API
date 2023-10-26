@@ -68,7 +68,7 @@ namespace Stack.ServiceLayer.Methods.Auth
 
 
         //Finalizes registration (user password) and refreshes token
-        public async Task<ApiResponse<JwtAccessToken>> FinalizeRegistration(RegistrationModel model)
+        public async Task<ApiResponse<JwtAccessToken>> RegisterUserAccount(RegistrationModel model)
         {
             ApiResponse<JwtAccessToken> result = new ApiResponse<JwtAccessToken>();
 
@@ -85,13 +85,16 @@ namespace Stack.ServiceLayer.Methods.Auth
                     return result;
                 }
 
+                var newUserStats = new UserStats {Loses = 0, Wins = 0, PlayerLevel = 0, WinningStreak = 0};
+
                 var user = new ApplicationUser
                 {
                     UserName = model.UserName,
                     Email = model.Email,
                     FullName = model.Fullname,
                     Gender = model.Gender,
-                    ReferenceNumber = GenerateUniqueReference()
+                    ReferenceNumber = GenerateUniqueReference(),
+                    UserStats = newUserStats
                 };
                 var createResult = await unitOfWork.UserManager.CreateAsync(user, model.Password);
 

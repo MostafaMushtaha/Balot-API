@@ -21,7 +21,7 @@ namespace Stack.API.Controllers.Groups
         public GroupsManagemenetController(IGroupsManagemenetService _service)
             : base(_service) { }
 
-        [HttpPost("RemoveGroupMember")]
+        [HttpPost("RemoveGroupMember/{groupMemberID}")]
         public async Task<IActionResult> RemoveMember(string groupMemberID)
         {
             return await AddItemResponseHandler(
@@ -32,13 +32,13 @@ namespace Stack.API.Controllers.Groups
         [HttpGet("GetUserInitialGroups")]
         public async Task<IActionResult> GetUserInitialGroups()
         {
-            return await AddItemResponseHandler(async () => await service.GetUserInitialGroups());
+            return await GetResponseHandler(async () => await service.GetUserInitialGroups());
         }
 
         [HttpGet("GetUserGroups")]
         public async Task<IActionResult> GetUserGroups()
         {
-            return await AddItemResponseHandler(async () => await service.GetUserGroups());
+            return await GetResponseHandler(async () => await service.GetUserGroups());
         }
 
         [HttpGet("GetUserGroupDetails")]
@@ -49,7 +49,7 @@ namespace Stack.API.Controllers.Groups
             );
         }
 
-        [HttpPost("GetSelectedMembers")]
+        [HttpGet("GetSelectedMembers/{groupID}")]
         public async Task<IActionResult> GetSelectedMembers(long groupID)
         {
             return await AddItemResponseHandler(

@@ -13,7 +13,6 @@ namespace Stack.Entities.DatabaseEntities.Groups
 {
     public class Group : BaseEntity
     {
-        public long ID { get; set; }
         public string Name { get; set; }
         public int Status { get; set; }
         public virtual ICollection<Group_Member> Members { get; set; }

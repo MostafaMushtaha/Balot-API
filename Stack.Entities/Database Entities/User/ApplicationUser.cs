@@ -24,6 +24,7 @@ namespace Stack.Entities.DatabaseEntities.User
         public DateTime? Birthdate { get; set; }
         public DateTime? LastLogin { get; set; }
         public virtual Profile UserProfile { get; set; }
+        public virtual UserStats UserStats { get; set; }
         public virtual ICollection<UserDevice>? Devices { get; set; }
 
         // public virtual ICollection<OTPRequest>? OTPRequests { get; set; }

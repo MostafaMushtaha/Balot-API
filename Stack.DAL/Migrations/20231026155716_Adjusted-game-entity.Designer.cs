@@ -12,8 +12,8 @@ using Stack.DAL;
 namespace Stack.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231012164025_Adjusting-User")]
-    partial class AdjustingUser
+    [Migration("20231026155716_Adjusted-game-entity")]
+    partial class Adjustedgameentity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -176,66 +176,6 @@ namespace Stack.DAL.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Stack.Entities.DatabaseEntities.Auth.OTPRequest", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"), 1L, 1);
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DialCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ISOCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InternationalNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NationalNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OTP")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("PasswordResetExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PasswordResetToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("PasswordTokenIsUsed")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("RequestType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("OTPRequests");
-                });
-
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Auth.RegistrationRequest", b =>
                 {
                     b.Property<long>("ID")
@@ -293,7 +233,7 @@ namespace Stack.DAL.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long?>("GroupID")
+                    b.Property<long>("GroupID")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("ModificationDate")
@@ -302,14 +242,14 @@ namespace Stack.DAL.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Total")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.HasIndex("GroupID");
 
-                    b.ToTable("Game");
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Games.Game_Member", b =>
@@ -329,11 +269,11 @@ namespace Stack.DAL.Migrations
                     b.Property<long>("GameID")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("GameID2")
+                    b.Property<long>("GroupMemberID")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("MemberID")
-                        .HasColumnType("bigint");
+                    b.Property<bool>("IsWinner")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModificationDate")
                         .HasColumnType("datetime2");
@@ -346,14 +286,11 @@ namespace Stack.DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("GameID")
-                        .IsUnique();
+                    b.HasIndex("GameID");
 
-                    b.HasIndex("GameID2");
+                    b.HasIndex("GroupMemberID");
 
-                    b.HasIndex("MemberID");
-
-                    b.ToTable("Game_Member");
+                    b.ToTable("Game_Members");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Games.GameRound", b =>
@@ -389,7 +326,7 @@ namespace Stack.DAL.Migrations
 
                     b.HasIndex("GameID");
 
-                    b.ToTable("GameRound");
+                    b.ToTable("GameRounds");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.GroupMedia.Media", b =>
@@ -451,13 +388,12 @@ namespace Stack.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReferenceNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
-                    b.ToTable("Group");
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Groups.Group_Member", b =>
@@ -478,6 +414,9 @@ namespace Stack.DAL.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsOwner")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSelected")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModificationDate")
@@ -649,6 +588,10 @@ namespace Stack.DAL.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ReferenceNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
 
@@ -667,10 +610,6 @@ namespace Stack.DAL.Migrations
 
                     b.Property<int>("VerificationMethod")
                         .HasColumnType("int");
-
-                    b.Property<string>("phoneNumberSynonym")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -736,6 +675,12 @@ namespace Stack.DAL.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<long>("GroupMemberID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("GroupMemberLevel")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("Loses")
                         .HasColumnType("bigint");
 
@@ -748,9 +693,55 @@ namespace Stack.DAL.Migrations
                     b.Property<long>("TotalGames")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("WinningStreak")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Wins")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("GroupMemberID")
+                        .IsUnique();
+
+                    b.ToTable("Stats");
+                });
+
+            modelBuilder.Entity("Stack.Entities.DatabaseEntities.User.UserStats", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("Loses")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("PlayerLevel")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TotalGames")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("WinningStreak")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("Wins")
                         .HasColumnType("bigint");
@@ -760,7 +751,7 @@ namespace Stack.DAL.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Stats");
+                    b.ToTable("UserStats");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.UserProfile.Profile", b =>
@@ -881,46 +872,34 @@ namespace Stack.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Stack.Entities.DatabaseEntities.Auth.OTPRequest", b =>
-                {
-                    b.HasOne("Stack.Entities.DatabaseEntities.User.ApplicationUser", "User")
-                        .WithMany("OTPRequests")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Games.Game", b =>
                 {
-                    b.HasOne("Stack.Entities.DatabaseEntities.Groups.Group", null)
+                    b.HasOne("Stack.Entities.DatabaseEntities.Groups.Group", "Group")
                         .WithMany("Games")
-                        .HasForeignKey("GroupID");
+                        .HasForeignKey("GroupID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Games.Game_Member", b =>
                 {
                     b.HasOne("Stack.Entities.DatabaseEntities.Games.Game", "Game")
-                        .WithOne("Winner")
-                        .HasForeignKey("Stack.Entities.DatabaseEntities.Games.Game_Member", "GameID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("GameMembers")
+                        .HasForeignKey("GameID")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Stack.Entities.DatabaseEntities.Games.Game", null)
+                    b.HasOne("Stack.Entities.DatabaseEntities.Groups.Group_Member", "GroupMember")
                         .WithMany("GameMembers")
-                        .HasForeignKey("GameID2")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("Stack.Entities.DatabaseEntities.Groups.Group_Member", "Member")
-                        .WithMany("GameMembers")
-                        .HasForeignKey("MemberID")
+                        .HasForeignKey("GroupMemberID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Game");
 
-                    b.Navigation("Member");
+                    b.Navigation("GroupMember");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Games.GameRound", b =>
@@ -999,7 +978,7 @@ namespace Stack.DAL.Migrations
                     b.HasOne("Stack.Entities.DatabaseEntities.User.ApplicationUser", "Friend")
                         .WithMany()
                         .HasForeignKey("FriendID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Stack.Entities.DatabaseEntities.User.ApplicationUser", "User")
@@ -1015,10 +994,21 @@ namespace Stack.DAL.Migrations
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.User.Stats", b =>
                 {
-                    b.HasOne("Stack.Entities.DatabaseEntities.User.ApplicationUser", "User")
+                    b.HasOne("Stack.Entities.DatabaseEntities.Groups.Group_Member", "GroupMember")
                         .WithOne("Stats")
-                        .HasForeignKey("Stack.Entities.DatabaseEntities.User.Stats", "UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("Stack.Entities.DatabaseEntities.User.Stats", "GroupMemberID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("GroupMember");
+                });
+
+            modelBuilder.Entity("Stack.Entities.DatabaseEntities.User.UserStats", b =>
+                {
+                    b.HasOne("Stack.Entities.DatabaseEntities.User.ApplicationUser", "User")
+                        .WithOne("UserStats")
+                        .HasForeignKey("Stack.Entities.DatabaseEntities.User.UserStats", "UserID")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1051,9 +1041,6 @@ namespace Stack.DAL.Migrations
                     b.Navigation("GameMembers");
 
                     b.Navigation("Rounds");
-
-                    b.Navigation("Winner")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Groups.Group", b =>
@@ -1070,6 +1057,9 @@ namespace Stack.DAL.Migrations
                     b.Navigation("GameMembers");
 
                     b.Navigation("Media");
+
+                    b.Navigation("Stats")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.User.ApplicationUser", b =>
@@ -1082,12 +1072,10 @@ namespace Stack.DAL.Migrations
 
                     b.Navigation("Notifications");
 
-                    b.Navigation("OTPRequests");
-
-                    b.Navigation("Stats")
+                    b.Navigation("UserProfile")
                         .IsRequired();
 
-                    b.Navigation("UserProfile")
+                    b.Navigation("UserStats")
                         .IsRequired();
                 });
 

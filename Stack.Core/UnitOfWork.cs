@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Stack.Core.Managers.Games;
 using Stack.Core.Managers.Groups;
 using Stack.Core.Managers.Modules.Auth;
+using Stack.Core.Managers.Modules.Games;
 using Stack.Core.Managers.Modules.Groups;
 using Stack.Core.Managers.Modules.UserProfile;
 using Stack.Core.Managers.Social;
@@ -233,6 +235,71 @@ namespace Stack.Core
                 }
 
                 return appVersionsManager;
+            }
+        }
+        private GameManager gameManager;
+        public GameManager GameManager
+        {
+            get
+            {
+                if (gameManager == null)
+                {
+                    gameManager = new GameManager(context);
+                }
+
+                return gameManager;
+            }
+        }
+        private GameMembersManager gameMembersManager;
+        public GameMembersManager GameMembersManager
+        {
+            get
+            {
+                if (gameMembersManager == null)
+                {
+                    gameMembersManager = new GameMembersManager(context);
+                }
+
+                return gameMembersManager;
+            }
+        }
+        private GameRoundsManager gameRoundsManager;
+        public GameRoundsManager GameRoundsManager
+        {
+            get
+            {
+                if (gameRoundsManager == null)
+                {
+                    gameRoundsManager = new GameRoundsManager(context);
+                }
+
+                return gameRoundsManager;
+            }
+        }
+        private StatsManager statsManager;
+        public StatsManager StatsManager
+        {
+            get
+            {
+                if (statsManager == null)
+                {
+                    statsManager = new StatsManager(context);
+                }
+
+                return statsManager;
+            }
+        }
+        private UserStatsManager userStatsManager;
+        public UserStatsManager UserStatsManager
+        {
+            get
+            {
+                if (userStatsManager == null)
+                {
+                    userStatsManager = new UserStatsManager(context);
+                }
+
+                return userStatsManager;
             }
         }
         

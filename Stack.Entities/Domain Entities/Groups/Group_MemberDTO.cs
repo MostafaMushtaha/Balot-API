@@ -8,7 +8,9 @@ using Stack.Entities.DatabaseEntities.User;
 namespace Stack.Entities.DomainEntities.Groups
 {
     public class Group_MemberDTO
-    {
+    {    
+        public long ID { get; set; }
+        public string FullName { get; set; }
         public string UserID { get; set; }
         public long GroupID { get; set; }
         public string ReferenceNumber { get; set; }
@@ -17,4 +19,5 @@ namespace Stack.Entities.DomainEntities.Groups
         public bool IsSelected { get; set; }
         public Stats Stats { get; set; }
     }
+
 }

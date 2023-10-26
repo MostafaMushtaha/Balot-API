@@ -15,7 +15,7 @@ namespace Stack.ServiceLayer.Methods.Groups
         public Task<ApiResponse<List<UserGroupsModel>>> GetUserInitialGroups();
         public Task<ApiResponse<List<UserGroupsModel>>> GetUserGroups();
         public Task<ApiResponse<UserGroupDetailsModel>> GetUserGroupDetails(long groupID);
-        public Task<ApiResponse<List<Group_MemberDTO>>> GetSelectedMembers(long groupId);
         public Task<ApiResponse<bool>> RemoveMember(string groupMemberID);
+        public Task<ApiResponse<List<Group_MemberDTO>>> GetSelectedMembers(long groupId);
     }
 }

@@ -19,20 +19,27 @@ namespace Stack.API.Controllers.Users
         public FriendsController(IFriendsService _service)
             : base(_service) { }
 
-        [HttpPost("AddFriend")]
+        [HttpGet("AddFriend/{friendID}")]
         public async Task<IActionResult> AddFriend(string friendID)
         {
-            return await AddItemResponseHandler(
+            return await GetResponseHandler(
                 async () => await service.AddFriend(friendID)
             );
+        }   
+        [HttpPost("RemoveFriend")]
+        public async Task<IActionResult> RemoveFriend(string friendID)
+        {
+            return await AddItemResponseHandler(
+                async () => await service.RemoveFriend(friendID)
+            );
         }
-        // [HttpGet("GetUserFriends")]
-        // public async Task<IActionResult> GetUserFriends()
-        // {
-        //     return await AddItemResponseHandler(
-        //         async () => await service.GetUserFriends()
-        //     );
-        // }
+        [HttpGet("GetUserFriends")]
+        public async Task<IActionResult> GetUserFriends()
+        {
+            return await GetResponseHandler(
+                async () => await service.GetUserFriends()
+            );
+        }
 
     }
 }

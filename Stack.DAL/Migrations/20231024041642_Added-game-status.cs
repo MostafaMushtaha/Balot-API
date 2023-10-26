@@ -4,23 +4,23 @@
 
 namespace Stack.DAL.Migrations
 {
-    public partial class Addedselectedflag : Migration
+    public partial class Addedgamestatus : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsSelected",
-                table: "Group_Member",
-                type: "bit",
+            migrationBuilder.AddColumn<int>(
+                name: "Status",
+                table: "Game",
+                type: "int",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IsSelected",
-                table: "Group_Member");
+                name: "Status",
+                table: "Game");
         }
     }
 }

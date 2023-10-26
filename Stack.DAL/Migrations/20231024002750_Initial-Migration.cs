@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Stack.DAL.Migrations
 {
-    public partial class Initialmigration : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,15 +44,15 @@ namespace Stack.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "varchar(70)", nullable: false),
-                    LastName = table.Column<string>(type: "varchar(70)", nullable: false),
                     FullName = table.Column<string>(type: "varchar(70)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    phoneNumberSynonym = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReferenceNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Language = table.Column<int>(type: "int", nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     VerificationMethod = table.Column<int>(type: "int", nullable: false),
+                    PlayerLevel = table.Column<long>(type: "bigint", nullable: false),
+                    WinningStreak = table.Column<long>(type: "bigint", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Birthdate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -76,13 +76,13 @@ namespace Stack.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Group",
+                name: "Groups",
                 columns: table => new
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReferenceNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -90,7 +90,7 @@ namespace Stack.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Group", x => x.ID);
+                    table.PrimaryKey("PK_Groups", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -240,8 +240,7 @@ namespace Stack.DAL.Migrations
                         name: "FK_Friends_AspNetUsers_FriendID",
                         column: x => x.FriendID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Friends_AspNetUsers_UserID",
                         column: x => x.UserID,
@@ -278,37 +277,6 @@ namespace Stack.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OTPRequests",
-                columns: table => new
-                {
-                    ID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    InternationalNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NationalNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DialCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ISOCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OTP = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PasswordResetToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PasswordResetExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PasswordTokenIsUsed = table.Column<bool>(type: "bit", nullable: true),
-                    RequestType = table.Column<int>(type: "int", nullable: false),
-                    IsUsed = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OTPRequests", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_OTPRequests_AspNetUsers_UserID",
-                        column: x => x.UserID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Profiles",
                 columns: table => new
                 {
@@ -326,32 +294,6 @@ namespace Stack.DAL.Migrations
                     table.PrimaryKey("PK_Profiles", x => x.ID);
                     table.ForeignKey(
                         name: "FK_Profiles_AspNetUsers_UserID",
-                        column: x => x.UserID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stats",
-                columns: table => new
-                {
-                    ID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Wins = table.Column<long>(type: "bigint", nullable: false),
-                    Loses = table.Column<long>(type: "bigint", nullable: false),
-                    TotalGames = table.Column<long>(type: "bigint", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stats", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Stats_AspNetUsers_UserID",
                         column: x => x.UserID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -380,13 +322,38 @@ namespace Stack.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserStats",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Wins = table.Column<long>(type: "bigint", nullable: false),
+                    Loses = table.Column<long>(type: "bigint", nullable: false),
+                    TotalGames = table.Column<long>(type: "bigint", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserStats", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_UserStats_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Game",
                 columns: table => new
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Total = table.Column<long>(type: "bigint", nullable: false),
-                    GroupID = table.Column<long>(type: "bigint", nullable: true),
+                    GroupID = table.Column<long>(type: "bigint", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -396,9 +363,9 @@ namespace Stack.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Game", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Game_Group_GroupID",
+                        name: "FK_Game_Groups_GroupID",
                         column: x => x.GroupID,
-                        principalTable: "Group",
+                        principalTable: "Groups",
                         principalColumn: "ID");
                 });
 
@@ -411,6 +378,7 @@ namespace Stack.DAL.Migrations
                     UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     GroupID = table.Column<long>(type: "bigint", nullable: false),
                     IsOwner = table.Column<bool>(type: "bit", nullable: false),
+                    IsSelected = table.Column<bool>(type: "bit", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -426,9 +394,9 @@ namespace Stack.DAL.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Group_Member_Group_GroupID",
+                        name: "FK_Group_Member_Groups_GroupID",
                         column: x => x.GroupID,
-                        principalTable: "Group",
+                        principalTable: "Groups",
                         principalColumn: "ID");
                 });
 
@@ -485,10 +453,11 @@ namespace Stack.DAL.Migrations
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MemberID = table.Column<long>(type: "bigint", nullable: false),
+                    GroupMemberID = table.Column<long>(type: "bigint", nullable: false),
                     GameID = table.Column<long>(type: "bigint", nullable: false),
                     Team = table.Column<int>(type: "int", nullable: false),
-                    GameID2 = table.Column<long>(type: "bigint", nullable: true),
+                    IsWinner = table.Column<bool>(type: "bit", nullable: false),
+                    GameID1 = table.Column<long>(type: "bigint", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -501,16 +470,15 @@ namespace Stack.DAL.Migrations
                         name: "FK_Game_Member_Game_GameID",
                         column: x => x.GameID,
                         principalTable: "Game",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_Game_Member_Game_GameID2",
-                        column: x => x.GameID2,
+                        name: "FK_Game_Member_Game_GameID1",
+                        column: x => x.GameID1,
                         principalTable: "Game",
                         principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_Game_Member_Group_Member_MemberID",
-                        column: x => x.MemberID,
+                        name: "FK_Game_Member_Group_Member_GroupMemberID",
+                        column: x => x.GroupMemberID,
                         principalTable: "Group_Member",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
@@ -533,16 +501,41 @@ namespace Stack.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Media", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Media_Group_GroupID",
-                        column: x => x.GroupID,
-                        principalTable: "Group",
-                        principalColumn: "ID");
-                    table.ForeignKey(
                         name: "FK_Media_Group_Member_CreatorID",
                         column: x => x.CreatorID,
                         principalTable: "Group_Member",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Media_Groups_GroupID",
+                        column: x => x.GroupID,
+                        principalTable: "Groups",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Stats",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GroupMemberID = table.Column<long>(type: "bigint", nullable: false),
+                    Wins = table.Column<long>(type: "bigint", nullable: false),
+                    Loses = table.Column<long>(type: "bigint", nullable: false),
+                    TotalGames = table.Column<long>(type: "bigint", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stats", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Stats_Group_Member_GroupMemberID",
+                        column: x => x.GroupMemberID,
+                        principalTable: "Group_Member",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateIndex(
@@ -602,18 +595,19 @@ namespace Stack.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Game_Member_GameID",
                 table: "Game_Member",
-                column: "GameID",
-                unique: true);
+                column: "GameID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Game_Member_GameID2",
+                name: "IX_Game_Member_GameID1",
                 table: "Game_Member",
-                column: "GameID2");
+                column: "GameID1",
+                unique: true,
+                filter: "[GameID1] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Game_Member_MemberID",
+                name: "IX_Game_Member_GroupMemberID",
                 table: "Game_Member",
-                column: "MemberID");
+                column: "GroupMemberID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameRound_GameID",
@@ -646,11 +640,6 @@ namespace Stack.DAL.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OTPRequests_UserID",
-                table: "OTPRequests",
-                column: "UserID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Profiles_UserID",
                 table: "Profiles",
                 column: "UserID",
@@ -663,15 +652,21 @@ namespace Stack.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stats_UserID",
+                name: "IX_Stats_GroupMemberID",
                 table: "Stats",
-                column: "UserID",
+                column: "GroupMemberID",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserDevices_UserID",
                 table: "UserDevices",
                 column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserStats_UserID",
+                table: "UserStats",
+                column: "UserID",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -710,9 +705,6 @@ namespace Stack.DAL.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "OTPRequests");
-
-            migrationBuilder.DropTable(
                 name: "ProfileSettings");
 
             migrationBuilder.DropTable(
@@ -725,22 +717,25 @@ namespace Stack.DAL.Migrations
                 name: "UserDevices");
 
             migrationBuilder.DropTable(
+                name: "UserStats");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Game");
 
             migrationBuilder.DropTable(
-                name: "Group_Member");
-
-            migrationBuilder.DropTable(
                 name: "Profiles");
 
             migrationBuilder.DropTable(
-                name: "Group");
+                name: "Group_Member");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
         }
     }
 }

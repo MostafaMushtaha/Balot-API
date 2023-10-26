@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using Stack.Entities.DatabaseEntities.User;
 
 namespace Stack.Entities.DomainEntities.Auth
 {
@@ -15,6 +16,9 @@ namespace Stack.Entities.DomainEntities.Auth
         public string Password { get; set; }
         public string Fullname { get; set; }
         public int Gender { get; set; }
+        // public UserStats UserStats { get; set; }
+
+
 
     }
 

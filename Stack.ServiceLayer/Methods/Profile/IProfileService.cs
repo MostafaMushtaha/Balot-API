@@ -12,10 +12,7 @@ namespace Stack.ServiceLayer.Methods.UserProfiles
 {
     public interface IProfileService
     {
-        public Task<ApiResponse<bool>> InitializeUserProfile(ApplicationUser user);
-
-        // public Task<ApiResponse<ProfileViewModel>> ViewProfile(long profileID);
-
+        public Task<ApiResponse<ProfileViewModel>> ViewPersonalProfile();
         public Task<ApiResponse<string>> UpdateProfileImage(UpdateProfileImageModel model);
 
     }

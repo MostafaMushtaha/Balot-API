@@ -16,10 +16,10 @@ namespace Stack.API.Controllers.Auth
             : base(_service) { }
 
         [AllowAnonymous]
-        [HttpPost("FinalizeRegistration")]
+        [HttpPost("RegisterUserAccount")]
         public async Task<IActionResult> RegisterUser(RegistrationModel model)
         {
-            return await GetResponseHandler(async () => await service.FinalizeRegistration(model));
+            return await GetResponseHandler(async () => await service.RegisterUserAccount(model));
         }
 
         [AllowAnonymous]

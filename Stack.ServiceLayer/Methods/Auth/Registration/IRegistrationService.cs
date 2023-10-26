@@ -12,7 +12,7 @@ namespace Stack.ServiceLayer.Methods.Auth.Registration
 {
     public interface IRegistrationservice
     {
-        public Task<ApiResponse<JwtAccessToken>> FinalizeRegistration(RegistrationModel model);
+        public Task<ApiResponse<JwtAccessToken>> RegisterUserAccount(RegistrationModel model);
         public Task<ApiResponse<string>> Google_VerifyPhoneNumberRegistration(Google_VerifyPhoneNumberModel model);
     }
 }

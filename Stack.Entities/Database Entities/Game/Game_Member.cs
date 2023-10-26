@@ -11,12 +11,13 @@ namespace Stack.Entities.DatabaseEntities.Games
 {
     public class Game_Member : BaseEntity
     {
-        public long MemberID { get; set; }
+        public long GroupMemberID { get; set; }
         public long GameID { get; set; }
         public int Team { get; set; }
+        public bool IsWinner { get; set; }
 
-        [ForeignKey("MemberID")]
-        public virtual Group_Member Member { get; set; }
+        [ForeignKey("GroupMemberID")]
+        public virtual Group_Member GroupMember { get; set; }
 
         [ForeignKey("GameID")]
         public virtual Game Game { get; set; }

@@ -179,19 +179,17 @@ namespace Stack.ServiceLayer.Methods.Groups
             }
         }
 
-        public async Task<ApiResponse<List<Group_MemberDTO>>> GetSelectedMembers(long groupId)
+        public async Task<ApiResponse<List<Group_MemberDTO>>> GetSelectedMembers(long groupID)
         {
             ApiResponse<List<Group_MemberDTO>> result = new ApiResponse<List<Group_MemberDTO>>();
 
             try
             {
-                var groupMembers = await unitOfWork.GroupMembersManager.GetAsync(
-                    m => m.GroupID == groupId
-                );
+                var groupMembers = await unitOfWork.GroupMembersManager.GetSelectedMembers(groupID);
 
                 if (groupMembers == null)
                 {
-                    _logger.LogError($"No members found for group with ID {groupId}");
+                    _logger.LogError($"No members found for group with ID {groupID}");
                     result.Succeeded = false;
                     result.Errors.Add("No members found for the given group.");
                     return result;
@@ -200,7 +198,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                 if (groupMembers.Count() < 4)
                 {
                     _logger.LogError(
-                        $"Not enough members (less than 4) found for group with ID {groupId}"
+                        $"Not enough members (less than 4) found for group with ID {groupID}"
                     );
                     result.Succeeded = false;
                     result.Errors.Add(
@@ -215,7 +213,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                 }
 
                 // Log information
-                _logger.LogInformation($"Selected members for group with ID {groupId}");
+                _logger.LogInformation($"Selected members for group with ID {groupID}");
 
                 // Map the entities to DTOs
                 var groupMemberDTOs = mapper.Map<List<Group_MemberDTO>>(groupMembers);
@@ -227,7 +225,7 @@ namespace Stack.ServiceLayer.Methods.Groups
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception fetching members for group with ID {groupId}");
+                _logger.LogError(ex, $"Exception fetching members for group with ID {groupID}");
                 result.Succeeded = false;
                 result.Errors.Add(ex.Message);
                 result.ErrorType = ErrorType.SystemError;

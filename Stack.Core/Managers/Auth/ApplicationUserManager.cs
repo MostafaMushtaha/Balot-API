@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stack.DAL;
+using Stack.DTOs.Responses.Search;
 using Stack.Entities.DatabaseEntities.User;
 using Stack.Entities.Enums.Modules.Auth;
 
@@ -62,8 +63,7 @@ namespace Stack.Core.Managers.Modules.Auth
                 errors,
                 services,
                 logger
-            )
-        { }
+            ) { }
 
         public async Task<ApplicationUser> GetUserById(string userId)
         {
@@ -211,5 +211,73 @@ namespace Stack.Core.Managers.Modules.Auth
             });
         }
 
+        public async Task<List<SearchResultsModel>> SearchUsers(string content)
+        {
+            if (!string.IsNullOrWhiteSpace(content) && content.All(char.IsDigit))
+            {
+                // Search by Reference Number.
+                return await dbSet
+                    .Where(u => u.ReferenceNumber == content)
+                    .Select(
+                        u =>
+                            new SearchResultsModel
+                            {
+                                ID = u.Id,
+                                FullName = u.FullName,
+                                ReferenceNumber = u.ReferenceNumber
+                            }
+                    )
+                    .ToListAsync();
+            }
+            else if (!string.IsNullOrWhiteSpace(content))
+            {
+                var friendsList = await dbSet
+                    .SelectMany(u => u.Friends)
+                    .Where(f => f.Friend.FullName.Contains(content))
+                    .Select(
+                        f =>
+                            new SearchResultsModel
+                            {
+                                ID = f.FriendID,
+                                FullName = f.Friend.FullName,
+                                ReferenceNumber = f.Friend.ReferenceNumber
+                            }
+                    )
+                    .ToListAsync();
+
+                if (friendsList.Any())
+                {
+                    return friendsList;
+                }
+
+                // If no friends are found with that name, then search the whole users list.
+                return await dbSet
+                    .Where(u => u.FullName.Contains(content))
+                    .Select(
+                        u =>
+                            new SearchResultsModel
+                            {
+                                ID = u.Id,
+                                FullName = u.FullName,
+                                ReferenceNumber = u.ReferenceNumber
+                            }
+                    )
+                    .ToListAsync();
+            }
+            else
+            {
+                return await dbSet
+                    .Select(
+                        u =>
+                            new SearchResultsModel
+                            {
+                                ID = u.Id,
+                                FullName = u.FullName,
+                                ReferenceNumber = u.ReferenceNumber
+                            }
+                    )
+                    .ToListAsync();
+            }
+        }
     }
 }

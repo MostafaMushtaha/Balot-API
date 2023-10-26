@@ -11,15 +11,10 @@ namespace Stack.Entities.DatabaseEntities.Games
 {
     public class Game : BaseEntity
     {
-        public long ID { get; set; }
-        public long Total { get; set; }
+        // public long Total { get; set; }
         public long GroupID { get; set; }
-
-        // public List<long> Scores { get; set; }
-        public virtual Game_Member Winner { get; set; }
-        // public virtual ICollection<int> Teams { get; set; }
-        // public long Rounds { get; set; }
-        public ICollection<GameRound> Rounds { get; set; } //int team number
+        public int Status { get; set; }
+        public ICollection<GameRound> Rounds { get; set; }
         public virtual ICollection<Game_Member> GameMembers { get; set; }
         
         [ForeignKey("GroupID")]

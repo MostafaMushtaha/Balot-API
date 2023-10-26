@@ -48,6 +48,8 @@ namespace Stack.DAL
             base.OnModelCreating(modelBuilder);
 
             // Relationships
+            modelBuilder.Entity<Group>().HasKey(t => t.ID);
+
             modelBuilder
                 .Entity<Group>()
                 .HasMany(g => g.Members)
@@ -89,14 +91,13 @@ namespace Stack.DAL
                 .HasOne(f => f.User)
                 .WithMany(u => u.Friends)
                 .HasForeignKey(f => f.UserID);
-            // .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder
                 .Entity<Friends>()
                 .HasOne(f => f.Friend)
                 .WithMany()
                 .HasForeignKey(f => f.FriendID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder
                 .Entity<Media>()
@@ -143,8 +144,14 @@ namespace Stack.DAL
 
             modelBuilder
                 .Entity<Group_Member>()
+                .HasOne(gm => gm.Stats)
+                .WithOne(t => t.GroupMember)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder
+                .Entity<Group_Member>()
                 .HasOne(gm => gm.Group)
-                .WithMany(t => t.Members)
+                .WithMany(g => g.Members)
                 .HasForeignKey(gm => gm.GroupID)
                 .OnDelete(DeleteBehavior.NoAction);
 
@@ -153,6 +160,12 @@ namespace Stack.DAL
                 .HasMany(u => u.GroupMember)
                 .WithOne(gm => gm.User)
                 .HasForeignKey(gm => gm.UserID);
+
+            modelBuilder
+                .Entity<ApplicationUser>()
+                .HasOne(gm => gm.UserStats)
+                .WithOne(t => t.User)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -163,6 +176,11 @@ namespace Stack.DAL
         public virtual DbSet<UserDevice> UserDevices { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<Group_Member> Group_Member { get; set; }
+        public virtual DbSet<UserStats> UserStats { get; set; }
+        public virtual DbSet<Stats> Stats { get; set; }
+        public virtual DbSet<Game> Games { get; set; }
+        public virtual DbSet<Game_Member> Game_Members { get; set; }
+        public virtual DbSet<GameRound> GameRounds { get; set; }
 
         // public virtual DbSet<OTPRequest> OTPRequests { get; set; }
 

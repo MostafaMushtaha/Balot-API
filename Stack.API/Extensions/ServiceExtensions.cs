@@ -1,11 +1,13 @@
 ﻿using Stack.ServiceLayer.Methods.Auth;
 using Stack.ServiceLayer.Methods.Auth.Registration;
 using Stack.ServiceLayer.Methods.Auth.User;
+using Stack.ServiceLayer.Methods.Games;
 using Stack.ServiceLayer.Methods.Groups;
 using Stack.ServiceLayer.Methods.Notifications;
 using Stack.ServiceLayer.Methods.System;
 using Stack.ServiceLayer.Methods.User;
 using Stack.ServiceLayer.Methods.UserProfiles;
+using Stack.ServiceLayer.Methods.users;
 using Stack.ServiceLayer.Methods.Users;
 
 namespace Stack.API.Extensions
@@ -17,6 +19,7 @@ namespace Stack.API.Extensions
         {
             caller.AddScoped<IUsersService, UsersService>();
             caller.AddScoped<IGroupsService, GroupsService>();
+            caller.AddScoped<IGameService, GameService>();
             caller.AddScoped<IGroupsManagemenetService, GroupsManagemenetService>();
             caller.AddScoped<IRegistrationservice, RegistrationService>();
             caller.AddScoped<IUserDevicesService, UserDevicesService>();
@@ -26,6 +29,7 @@ namespace Stack.API.Extensions
             caller.AddScoped<IUserSettingsService, UserSettingsService>();
             caller.AddScoped<ISystemServicesService, SystemServicesService>();
             caller.AddScoped<IFriendsService, FriendsService>();
+            caller.AddScoped<ISearchService, SearchService>();
 
 
             caller.AddHttpClient();

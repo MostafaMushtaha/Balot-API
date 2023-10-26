@@ -11,7 +11,6 @@ namespace Stack.Entities.DatabaseEntities.UserProfile
     public class Profile : BaseEntity
     {
         public string UserID { get; set; }
-
         public string Thumbnail { get; set; }
 
         [ForeignKey("UserID")]

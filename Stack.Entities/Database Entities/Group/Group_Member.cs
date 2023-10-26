@@ -14,7 +14,6 @@ namespace Stack.Entities.DatabaseEntities.Groups
     public class Group_Member : BaseEntity
     {
         public string UserID { get; set; }
-        public string FullName { get; set; }
         public long GroupID { get; set; }
         public bool IsOwner { get; set; }
         public bool IsSelected { get; set; }

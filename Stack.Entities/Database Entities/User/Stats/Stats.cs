@@ -12,10 +12,11 @@ namespace Stack.Entities.DatabaseEntities.User
     public class Stats : BaseEntity
     {
         public long GroupMemberID { get; set; }
-
         public long Wins { get; set; }
         public long Loses { get; set; }
         public long TotalGames { get; set; }
+        public long GroupMemberLevel { get; set; }
+        public long WinningStreak { get; set; }
 
         [ForeignKey("GroupMemberID")]
         public virtual Group_Member GroupMember { get; set; }
