@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 
@@ -19,5 +20,6 @@ namespace Stack.Entities.DomainEntities.Modules.Profile
     {
         public long Wins { get; set; }
         public long Loses { get; set; }
+        public long PlayerLevel { get; set; }
     }
 }

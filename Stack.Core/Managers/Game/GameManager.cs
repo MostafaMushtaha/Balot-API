@@ -39,32 +39,71 @@ namespace Stack.Core.Managers.Games
         public async Task<List<GameHistoryDTO>> GetUserGameHistory(string userId)
         {
             var gameHistories = await context.Game_Members
-                .Include(gm => gm.Game)
-                .ThenInclude(g => g.Rounds)
-                .Include(gm => gm.GroupMember)
                 .Where(gm => gm.GroupMember.UserID == userId)
+                .Select(
+                    gm =>
+                        new
+                        {
+                            gm.GameID,
+                            gm.Game.CreationDate,
+                            gm.Game.Group.Name,
+                            gm.Team,
+                            FirstTeamScore = gm.Game.Rounds.Sum(r => r.FirstTeamScore),
+                            SecondTeamScore = gm.Game.Rounds.Sum(r => r.SecondTeamScore),
+                            FirstTeamMembers = gm.Game.GameMembers
+                                .Where(gm2 => gm2.Team == 0)
+                                .Select(
+                                    gm2 =>
+                                        new TeamMemberDTO
+                                        {
+                                            UserID = gm2.GroupMember.UserID.ToString(),
+                                            UserName = gm2.GroupMember.User.UserName
+                                        }
+                                ),
+                            SecondTeamMembers = gm.Game.GameMembers
+                                .Where(gm2 => gm2.Team == 1)
+                                .Select(
+                                    gm2 =>
+                                        new TeamMemberDTO
+                                        {
+                                            UserID = gm2.GroupMember.UserID.ToString(),
+                                            UserName = gm2.GroupMember.User.UserName
+                                        }
+                                ),
+                            UserTeam = gm.Team // Save user's team number for later comparison
+                        }
+                )
+                .ToListAsync();
+
+            // Now process each item to ensure the user's team is first
+            var gameHistoryDTOs = gameHistories
                 .Select(
                     gm =>
                         new GameHistoryDTO
                         {
                             GameId = gm.GameID,
-                            DatePlayed = gm.Game.CreationDate,
+                            DatePlayed = gm.CreationDate,
+                            GroupName = gm.Name,
                             UserTeamScore =
-                                gm.Team == 1
-                                    ? gm.Game.Rounds.Sum(r => r.FirstTeamScore)
-                                    : gm.Game.Rounds.Sum(r => r.SecondTeamScore),
+                                gm.UserTeam == 0 ? gm.FirstTeamScore : gm.SecondTeamScore,
                             OpponentTeamScore =
-                                gm.Team == 2
-                                    ? gm.Game.Rounds.Sum(r => r.FirstTeamScore)
-                                    : gm.Game.Rounds.Sum(r => r.SecondTeamScore),
-                            GameMemberNames = gm.Game.GameMembers
-                                .Select(gm2 => gm2.GroupMember.User.UserName)
-                                .ToList()
+                                gm.UserTeam == 1 ? gm.FirstTeamScore : gm.SecondTeamScore,
+                            Members = new GameMember
+                            {
+                                FirstTeamMember =
+                                    gm.UserTeam == 0
+                                        ? gm.FirstTeamMembers.ToList()
+                                        : gm.SecondTeamMembers.ToList(),
+                                SecondTeamMember =
+                                    gm.UserTeam == 1
+                                        ? gm.FirstTeamMembers.ToList()
+                                        : gm.SecondTeamMembers.ToList(),
+                            }
                         }
                 )
-                .ToListAsync();
+                .ToList();
 
-            return gameHistories;
+            return gameHistoryDTOs;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Stack.Entities.DatabaseEntities.User;
+using Stack.Entities.DomainEntities.Users;
 
 namespace Stack.Entities.DomainEntities.Groups
 {
@@ -17,7 +18,7 @@ namespace Stack.Entities.DomainEntities.Groups
         public string Title { get; set; }
         public bool IsOwner { get; set; }
         public bool IsSelected { get; set; }
-        public Stats Stats { get; set; }
+        public UserStatsDTO Stats { get; set; }
     }
 
 }

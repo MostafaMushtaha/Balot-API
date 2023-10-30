@@ -206,9 +206,8 @@ namespace Stack.ServiceLayer.Methods.Games
                             }
                             else
                             {
-                                _logger.LogWarning("Error fetching round");
-                                result.Succeeded = false;
-                                result.Errors.Add("Error fetching round");
+                                await unitOfWork.SaveChangesAsync();
+                                result.Succeeded = true;
                                 return result;
                             }
                         }
@@ -497,12 +496,10 @@ namespace Stack.ServiceLayer.Methods.Games
 
             try
             {
-                // 1. Get current user ID
                 var userID = await HelperFunctions.GetUserID(_httpContextAccessor);
 
                 if (userID != null)
                 {
-                    // 2. Fetch Group_Member entities for the user
                     var gameHistory = await unitOfWork.GameManager.GetUserGameHistory(userID);
                     result.Succeeded = true;
                     result.Data = gameHistory;
@@ -522,7 +519,7 @@ namespace Stack.ServiceLayer.Methods.Games
                 _logger.LogError(ex, "Exception fetching recent games for current user");
                 result.Succeeded = false;
                 result.Errors.Add(ex.Message);
-                result.ErrorType = ErrorType.SystemError; // Assuming you have an enum or similar for ErrorType
+                result.ErrorType = ErrorType.SystemError;
                 return result;
             }
         }

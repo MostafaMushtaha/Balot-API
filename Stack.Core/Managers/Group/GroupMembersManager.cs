@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Stack.Entities.DomainEntities.Groups;
+using Stack.Entities.DatabaseEntities.User;
+using Stack.Entities.DomainEntities.Users;
 
 namespace Stack.Core.Managers.Modules.Groups
 {
@@ -47,7 +49,7 @@ namespace Stack.Core.Managers.Modules.Groups
         {
             return await dbSet
                 .Where(t => t.UserID == UserID)
-                .OrderBy(t => t.CreationDate)
+                .OrderByDescending(t => t.CreationDate)
                 .Take(2)
                 .Select(t => new UserGroupsModel { GroupID = t.GroupID, Name = t.Group.Name })
                 .Distinct()
@@ -76,7 +78,12 @@ namespace Stack.Core.Managers.Modules.Groups
                             ReferenceNumber = member.User.ReferenceNumber,
                             Title = member.User.FullName,
                             IsOwner = member.IsOwner,
-                            Stats = member.Stats
+                            Stats = new UserStatsDTO
+                            {
+                                Wins = member.User.UserStats.Wins,
+                                Loses = member.User.UserStats.Loses,
+                                PlayerLevel = member.User.UserStats.PlayerLevel
+                            }
                         }
                 )
                 .ToListAsync();
@@ -115,7 +122,7 @@ namespace Stack.Core.Managers.Modules.Groups
                     gm =>
                         new Group_MemberDTO
                         {
-                            ID = gm.ID,  
+                            ID = gm.ID,
                             FullName = gm.User.FullName,
                             UserID = gm.UserID,
                             GroupID = gm.GroupID,

@@ -10,8 +10,21 @@ namespace Stack.DTOs.Responses.Game
     {
         public long GameId { get; set; }
         public DateTime DatePlayed { get; set; }
+        public string GroupName { get; set; }
         public int UserTeamScore { get; set; }
         public int OpponentTeamScore { get; set; }
-        public List<string> GameMemberNames { get; set; }
+        public GameMember Members { get; set; }
+    }
+
+    public class GameMember
+    {
+        public List<TeamMemberDTO> FirstTeamMember { get; set; }
+        public List<TeamMemberDTO> SecondTeamMember { get; set; }
+    }
+
+    public class TeamMemberDTO
+    {
+        public string UserID { get; set; }
+        public string UserName { get; set; }
     }
 }

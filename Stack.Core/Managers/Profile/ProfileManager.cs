@@ -43,28 +43,16 @@ namespace Stack.Core.Managers.Modules.UserProfile
                         {
                             UserID = u.Id,
                             ReferenceNumber = u.ReferenceNumber,
-                            FullName = u.FullName
+                            FullName = u.FullName,
+                            Stats = new StatsViewModel
+                            {
+                                Wins = u.UserStats.Wins,
+                                Loses = u.UserStats.Loses,
+                                PlayerLevel = u.UserStats.PlayerLevel
+                            }
                         }
                 )
                 .FirstOrDefaultAsync();
-
-            if (userProfile != null)
-            {
-                var userStats = await context.UserStats
-                    .Where(s => s.UserID == userID)
-                    .GroupBy(s => s.UserID)
-                    .Select(
-                        g =>
-                            new StatsViewModel
-                            {
-                                Wins = g.Sum(s => s.Wins),
-                                Loses = g.Sum(s => s.Loses)
-                            }
-                    )
-                    .FirstOrDefaultAsync();
-
-                userProfile.Stats = userStats ?? new StatsViewModel { Wins = 0, Loses = 0 };
-            }
 
             return userProfile;
         }
