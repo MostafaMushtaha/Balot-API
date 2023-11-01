@@ -45,23 +45,42 @@ namespace Stack.Core.Managers.Modules.Groups
             }
         }
 
-        public async Task<List<UserGroupsModel>> GetUserInitialGroups(string UserID)
+        public async Task<UserGroupsModel> GetUserInitialGroups(string userID)
         {
-            return await dbSet
-                .Where(t => t.UserID == UserID)
-                .OrderByDescending(t => t.CreationDate)
+            var userWithGroups = await dbSet
+                .Where(t => t.UserID == userID)
+                .OrderByDescending(t => t.Group.CreationDate)
                 .Take(2)
-                .Select(t => new UserGroupsModel { GroupID = t.GroupID, Name = t.Group.Name })
-                .Distinct()
+                .Select(
+                    t =>
+                        new
+                        {
+                            t.User.FullName,
+                            Group = new GroupModel { GroupID = t.GroupID, Name = t.Group.Name }
+                        }
+                )
                 .ToListAsync();
+
+            var groupedByUser = userWithGroups
+                .GroupBy(t => t.FullName)
+                .Select(
+                    g =>
+                        new UserGroupsModel
+                        {
+                            userName = g.Key,
+                            Groups = g.Select(x => x.Group).ToList()
+                        }
+                )
+                .FirstOrDefault();
+            return groupedByUser;
         }
 
-        public async Task<List<UserGroupsModel>> GetUserGroups(string UserID)
+        public async Task<List<GroupModel>> GetUserGroups(string UserID)
         {
             return await dbSet
                 .Where(t => t.UserID == UserID)
                 .OrderBy(t => t.CreationDate)
-                .Select(t => new UserGroupsModel { GroupID = t.GroupID, Name = t.Group.Name })
+                .Select(t => new GroupModel { GroupID = t.GroupID, Name = t.Group.Name })
                 .ToListAsync();
         }
 

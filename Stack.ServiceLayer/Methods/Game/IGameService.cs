@@ -19,6 +19,7 @@ namespace Stack.ServiceLayer.Methods.Games
         public Task<ApiResponse<bool>> CheckRoundStatus(RoundStatusModel model);
         public Task<ApiResponse<bool>> DeleteGame(long gameID);
         public Task<ApiResponse<List<GameHistoryDTO>>> GetRecentGames();
+        public Task<ApiResponse<List<GameHistoryDTO>>> GetUserGameHistoryInGroup(long groupID);
 
     }
 }

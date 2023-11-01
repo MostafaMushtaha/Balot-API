@@ -62,7 +62,7 @@ namespace Stack.ServiceLayer.Methods.Auth
             ApiResponse<JwtAccessToken> result = new ApiResponse<JwtAccessToken>();
             try
             {
-                model.Email = model.Email;
+                // model.Email = model.Email;
                 var user = await unitOfWork.UserManager.GetUserByEmail(model.Email);
 
                 if (user != null)

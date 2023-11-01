@@ -445,6 +445,7 @@ namespace Stack.ServiceLayer.Methods.Games
                             foreach (var member in game.GameMembers)
                             {
                                 await unitOfWork.GameMembersManager.RemoveAsync(member);
+                                await unitOfWork.SaveChangesAsync();
                             }
                         }
 
@@ -453,6 +454,7 @@ namespace Stack.ServiceLayer.Methods.Games
                             foreach (var round in game.Rounds)
                             {
                                 await unitOfWork.GameRoundsManager.RemoveAsync(round);
+                                await unitOfWork.SaveChangesAsync();
                             }
                         }
 
@@ -504,6 +506,53 @@ namespace Stack.ServiceLayer.Methods.Games
                     result.Succeeded = true;
                     result.Data = gameHistory;
                     return result;
+                }
+                else
+                {
+                    _logger.LogWarning("Unauthorized access: User ID not found");
+                    result.Succeeded = false;
+                    result.Errors.Add("Unauthorized");
+                    result.Errors.Add("غير مُصرَّح به");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception fetching recent games for current user");
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+
+        public async Task<ApiResponse<List<GameHistoryDTO>>> GetUserGameHistoryInGroup(long groupID)
+        {
+            ApiResponse<List<GameHistoryDTO>> result = new ApiResponse<List<GameHistoryDTO>>();
+
+            try
+            {
+                var userID = await HelperFunctions.GetUserID(_httpContextAccessor);
+
+                if (userID != null)
+                {
+                    var gameHistory = await unitOfWork.GameManager.GetUserGameHistoryInGroup(
+                        userID,
+                        groupID
+                    );
+                    if (gameHistory != null)
+                    {
+                        result.Succeeded = true;
+                        result.Data = gameHistory;
+                        return result;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("unable to get user games for this group");
+                        result.Succeeded = false;
+                        result.Errors.Add("unable to get user games for this group");
+                        return result;
+                    }
                 }
                 else
                 {

@@ -10,6 +10,12 @@ namespace Stack.Entities.DomainEntities.Groups
 {
     public class UserGroupsModel
     {
+        public string userName { get; set; }
+        public List<GroupModel> Groups { get; set; }
+    }
+
+    public class GroupModel
+    {
         public long GroupID { get; set; }
         public string Name { get; set; }
     }

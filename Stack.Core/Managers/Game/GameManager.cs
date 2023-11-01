@@ -70,12 +70,85 @@ namespace Stack.Core.Managers.Games
                                             UserName = gm2.GroupMember.User.UserName
                                         }
                                 ),
-                            UserTeam = gm.Team // Save user's team number for later comparison
+                            UserTeam = gm.Team
                         }
                 )
+                .OrderByDescending(gm => gm.CreationDate)
                 .ToListAsync();
 
-            // Now process each item to ensure the user's team is first
+            var gameHistoryDTOs = gameHistories
+                .Select(
+                    gm =>
+                        new GameHistoryDTO
+                        {
+                            GameId = gm.GameID,
+                            DatePlayed = gm.CreationDate,
+                            GroupName = gm.Name,
+                            UserTeamScore =
+                                gm.UserTeam == 0 ? gm.FirstTeamScore : gm.SecondTeamScore,
+                            OpponentTeamScore =
+                                gm.UserTeam == 1 ? gm.FirstTeamScore : gm.SecondTeamScore,
+                            Members = new GameMember
+                            {
+                                FirstTeamMember =
+                                    gm.UserTeam == 0
+                                        ? gm.FirstTeamMembers.ToList()
+                                        : gm.SecondTeamMembers.ToList(),
+                                SecondTeamMember =
+                                    gm.UserTeam == 1
+                                        ? gm.FirstTeamMembers.ToList()
+                                        : gm.SecondTeamMembers.ToList(),
+                            }
+                        }
+                )
+                .ToList();
+
+            return gameHistoryDTOs;
+        }
+
+        public async Task<List<GameHistoryDTO>> GetUserGameHistoryInGroup(
+            string userId,
+            long groupId
+        )
+        {
+            var gameHistories = await context.Game_Members
+                .Where(gm => gm.GroupMember.UserID == userId && gm.Game.GroupID == groupId)
+                .Select(
+                    gm =>
+                        new
+                        {
+                            gm.GameID,
+                            gm.Game.CreationDate,
+                            gm.Game.Group.Name,
+                            gm.Team,
+                            FirstTeamScore = gm.Game.Rounds.Sum(r => r.FirstTeamScore),
+                            SecondTeamScore = gm.Game.Rounds.Sum(r => r.SecondTeamScore),
+                            FirstTeamMembers = gm.Game.GameMembers
+                                .Where(gm2 => gm2.Team == 0)
+                                .Select(
+                                    gm2 =>
+                                        new TeamMemberDTO
+                                        {
+                                            UserID = gm2.GroupMember.UserID.ToString(),
+                                            UserName = gm2.GroupMember.User.UserName
+                                        }
+                                ),
+                            SecondTeamMembers = gm.Game.GameMembers
+                                .Where(gm2 => gm2.Team == 1)
+                                .Select(
+                                    gm2 =>
+                                        new TeamMemberDTO
+                                        {
+                                            UserID = gm2.GroupMember.UserID.ToString(),
+                                            UserName = gm2.GroupMember.User.UserName
+                                        }
+                                ),
+                            UserTeam = gm.Team
+                        }
+                )
+                .OrderByDescending(gm => gm.CreationDate) 
+                .ToListAsync();
+
             var gameHistoryDTOs = gameHistories
                 .Select(
                     gm =>

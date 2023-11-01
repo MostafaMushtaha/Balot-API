@@ -36,9 +36,9 @@ namespace Stack.ServiceLayer.Methods.Groups
             _logger = logger;
         }
 
-        public async Task<ApiResponse<List<UserGroupsModel>>> GetUserGroups()
+        public async Task<ApiResponse<List<GroupModel>>> GetUserGroups()
         {
-            ApiResponse<List<UserGroupsModel>> result = new ApiResponse<List<UserGroupsModel>>();
+            ApiResponse<List<GroupModel>> result = new ApiResponse<List<GroupModel>>();
             try
             {
                 var userID = await HelperFunctions.GetUserID(_httpContextAccessor);
@@ -82,9 +82,9 @@ namespace Stack.ServiceLayer.Methods.Groups
             }
         }
 
-        public async Task<ApiResponse<List<UserGroupsModel>>> GetUserInitialGroups()
+        public async Task<ApiResponse<UserGroupsModel>> GetUserInitialGroups()
         {
-            ApiResponse<List<UserGroupsModel>> result = new ApiResponse<List<UserGroupsModel>>();
+            ApiResponse<UserGroupsModel> result = new ApiResponse<UserGroupsModel>();
             try
             {
                 var userID = await HelperFunctions.GetUserID(_httpContextAccessor);

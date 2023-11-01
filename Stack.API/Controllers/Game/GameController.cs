@@ -40,6 +40,11 @@ namespace Stack.API.Controllers.Games
         {
             return await GetResponseHandler(async () => await service.GetRecentGames());
         }
+        [HttpGet("GetUserGameHistoryInGroup/{groupID}")]
+        public async Task<IActionResult> GetUserGameHistoryInGroup(long groupID)
+        {
+            return await GetResponseHandler(async () => await service.GetUserGameHistoryInGroup(groupID));
+        }
 
     }
 }
