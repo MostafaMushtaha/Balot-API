@@ -389,6 +389,7 @@ namespace Stack.ServiceLayer.Methods.Games
                     stats.WinningStreak >= streakThreshold ? winStreakBonus : regularWinBonus;
 
                 unitOfWork.UserStatsManager.UpdateAsync(stats);
+                unitOfWork.SaveChangesAsync();
             }
 
             // foreach (var stats in groupStats)
@@ -413,6 +414,7 @@ namespace Stack.ServiceLayer.Methods.Games
                 stats.PlayerLevel -= 1;
 
                 unitOfWork.UserStatsManager.UpdateAsync(stats);
+                unitOfWork.SaveChangesAsync();
             }
 
             // foreach (var stats in groupStats)
