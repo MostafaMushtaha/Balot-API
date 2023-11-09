@@ -26,10 +26,10 @@ namespace Stack.API.Controllers.Users
                 async () => await service.AddFriend(friendID)
             );
         }   
-        [HttpPost("RemoveFriend")]
+        [HttpGet("RemoveFriend/{friendID}")]
         public async Task<IActionResult> RemoveFriend(string friendID)
         {
-            return await AddItemResponseHandler(
+            return await GetResponseHandler(
                 async () => await service.RemoveFriend(friendID)
             );
         }

@@ -80,7 +80,7 @@ namespace Stack.ServiceLayer.Methods.Auth
                 {
                     _logger.LogWarning("Registration failed: Email already exists");
                     result.Succeeded = false;
-                    result.Errors.Add("Email already exists");
+                    // result.Errors.Add("Email already exists");
                     result.Errors.Add("البريد الإلكتروني موجود بالفعل");
                     return result;
                 }
@@ -89,7 +89,7 @@ namespace Stack.ServiceLayer.Methods.Auth
 
                 var user = new ApplicationUser
                 {
-                    UserName = model.UserName,
+                    UserName = model.Email,
                     Email = model.Email,
                     FullName = model.Fullname,
                     Gender = model.Gender,
@@ -100,15 +100,15 @@ namespace Stack.ServiceLayer.Methods.Auth
 
                 if (createResult.Succeeded)
                 {
-                    _logger.LogInformation("{user} - user created successfully", model.UserName);
+                    _logger.LogInformation("{user} - user created successfully");
                     var tokenResult = await _usersService.GenerateUserToken(user);
                     return tokenResult;
                 }
                 else
                 {
-                    _logger.LogError("{user} - error creating user", model.UserName);
+                    _logger.LogError("{user} - error creating user");
                     result.Succeeded = false;
-                    result.Errors.AddRange(createResult.Errors.Select(e => e.Description));
+                    result.Errors.Add("حدث خطأ أثناء التسجيل");
                     return result;
                 }
             }
@@ -117,7 +117,7 @@ namespace Stack.ServiceLayer.Methods.Auth
                 // Logging: Log the exception details
                 _logger.LogError(ex, "An error occurred during registration");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("حدث استثناء أثناء عملية التسجيل");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }

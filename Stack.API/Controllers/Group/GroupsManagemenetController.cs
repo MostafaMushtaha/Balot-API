@@ -21,10 +21,10 @@ namespace Stack.API.Controllers.Groups
         public GroupsManagemenetController(IGroupsManagemenetService _service)
             : base(_service) { }
 
-        [HttpPost("RemoveGroupMember/{groupMemberID}")]
+        [HttpGet("RemoveGroupMember/{groupMemberID}")]
         public async Task<IActionResult> RemoveMember(string groupMemberID)
         {
-            return await AddItemResponseHandler(
+            return await GetResponseHandler(
                 async () => await service.RemoveMember(groupMemberID)
             );
         }

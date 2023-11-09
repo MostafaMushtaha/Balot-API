@@ -193,7 +193,7 @@ namespace Stack.ServiceLayer.Methods.Users
                     {
                         _logger.LogError("User friends not found {user}", userID);
                         result.Succeeded = false;
-                        result.Errors.Add("Unauthorized");
+                        // result.Errors.Add("Unauthorized");
                         result.Errors.Add("غير مُصرَّح به");
                         return result;
                     }
@@ -202,7 +202,7 @@ namespace Stack.ServiceLayer.Methods.Users
                 {
                     _logger.LogWarning("Unauthorized access: User ID not found");
                     result.Succeeded = false;
-                    result.Errors.Add("Unauthorized");
+                    // result.Errors.Add("Unauthorized");
                     result.Errors.Add("غير مُصرَّح به");
                     return result;
                 }
@@ -211,7 +211,7 @@ namespace Stack.ServiceLayer.Methods.Users
             {
                 _logger.LogError(ex, "Exception removing friend");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء إزالة الصديق");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }

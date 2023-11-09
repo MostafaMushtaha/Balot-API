@@ -20,6 +20,7 @@ using Stack.Entities.DatabaseEntities.User;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Stack.DTOs.Responses.Game;
+using Stack.Entities.DomainEntities.Games;
 
 namespace Stack.ServiceLayer.Methods.Games
 {
@@ -94,7 +95,7 @@ namespace Stack.ServiceLayer.Methods.Games
                             {
                                 _logger.LogWarning("Round creation failed");
                                 result.Succeeded = false;
-                                result.Errors.Add("Round creation failed");
+                                result.Errors.Add("فشل في إنشاء الجولة");
                                 return result;
                             }
                             else
@@ -109,7 +110,7 @@ namespace Stack.ServiceLayer.Methods.Games
                         {
                             _logger.LogWarning("Game Member creation failed");
                             result.Succeeded = false;
-                            result.Errors.Add("Game Member creation failed");
+                            result.Errors.Add("فشل في إنشاء عضو اللعبة");
                             return result;
                         }
                     }
@@ -117,7 +118,7 @@ namespace Stack.ServiceLayer.Methods.Games
                     {
                         _logger.LogWarning("Game Creation Failed");
                         result.Succeeded = false;
-                        result.Errors.Add("Game Creation Failed");
+                        result.Errors.Add("فشل في إنشاء اللعبة");
                         return result;
                     }
                 }
@@ -125,8 +126,8 @@ namespace Stack.ServiceLayer.Methods.Games
                 {
                     _logger.LogWarning("Unauthorized access: User ID not found");
                     result.Succeeded = false;
-                    result.Errors.Add("Unauthorized");
-                    result.Errors.Add("غير مُصرَّح به");
+                    // result.Errors.Add("Unauthorized");
+                    result.Errors.Add("الدخول غير مصرح به: لم يتم العثور على معرف المستخدم");
                     return result;
                 }
             }
@@ -134,7 +135,7 @@ namespace Stack.ServiceLayer.Methods.Games
             {
                 _logger.LogError(ex, "Exception creating new game");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء في إنشاء لعبة جديدة");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
@@ -187,11 +188,13 @@ namespace Stack.ServiceLayer.Methods.Games
                                         model.WinningTeam = (int)WinningTeam.SecondTeam;
                                     }
                                 }
+
+                                game.Status = (int)GamesStatus.Ended;
+                                await unitOfWork.SaveChangesAsync();
                                 var StatsAdjustmentResult = AdjustStats(model);
 
                                 if (StatsAdjustmentResult.Result.Succeeded)
                                 {
-                                    game.Status = (int)GamesStatus.Ended;
                                     await unitOfWork.SaveChangesAsync();
                                     result.Succeeded = true;
                                     return result;
@@ -200,7 +203,7 @@ namespace Stack.ServiceLayer.Methods.Games
                                 {
                                     _logger.LogWarning("Error adjusting stats");
                                     result.Succeeded = false;
-                                    result.Errors.Add("Error adjusting stats");
+                                    result.Errors.Add("خطأ في تعديل الإحصائيات");
                                     return result;
                                 }
                             }
@@ -215,7 +218,7 @@ namespace Stack.ServiceLayer.Methods.Games
                         {
                             _logger.LogWarning($"No rounds found for game with ID {model.GameID}.");
                             result.Succeeded = false;
-                            result.Errors.Add("No rounds found");
+                            result.Errors.Add("لم يتم العثور على جولات");
                             return result;
                         }
                     }
@@ -223,7 +226,7 @@ namespace Stack.ServiceLayer.Methods.Games
                     {
                         _logger.LogWarning($"Game with ID {model.GameID} not found.");
                         result.Succeeded = false;
-                        result.Errors.Add("Game not found");
+                        result.Errors.Add("اللعبة غير موجودة");
                         return result;
                     }
                 }
@@ -240,7 +243,7 @@ namespace Stack.ServiceLayer.Methods.Games
             {
                 _logger.LogError(ex, "Exception while checking round status");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء التحقق من حالة الجولة");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
@@ -265,14 +268,31 @@ namespace Stack.ServiceLayer.Methods.Games
 
                 if (allGroupMembers != null)
                 {
-                    var winnersUserId = allGroupMembers
-                        .Where(gm => model.Teams.FirstTeamMembers.Contains(gm.ID))
-                        .Select(gm => gm.UserID)
-                        .ToList();
-                    var losersUserId = allGroupMembers
-                        .Where(gm => model.Teams.SecondTeamMembers.Contains(gm.ID))
-                        .Select(gm => gm.UserID)
-                        .ToList();
+                    List<string> winnersUserId; // Declared outside of if...else
+                    List<string> losersUserId; // Declared outside of if...else
+
+                    if (model.FirstTeamScore >= 152 && model.FirstTeamScore > model.SecondTeamScore)
+                    {
+                        winnersUserId = allGroupMembers
+                            .Where(gm => model.Teams.FirstTeamMembers.Contains(gm.ID))
+                            .Select(gm => gm.UserID)
+                            .ToList();
+                        losersUserId = allGroupMembers
+                            .Where(gm => model.Teams.SecondTeamMembers.Contains(gm.ID))
+                            .Select(gm => gm.UserID)
+                            .ToList();
+                    }
+                    else
+                    {
+                        winnersUserId = allGroupMembers
+                            .Where(gm => model.Teams.SecondTeamMembers.Contains(gm.ID))
+                            .Select(gm => gm.UserID)
+                            .ToList();
+                        losersUserId = allGroupMembers
+                            .Where(gm => model.Teams.FirstTeamMembers.Contains(gm.ID))
+                            .Select(gm => gm.UserID)
+                            .ToList();
+                    }
 
                     var userStatsWinners = (
                         await Task.WhenAll(
@@ -291,7 +311,7 @@ namespace Stack.ServiceLayer.Methods.Games
                     {
                         _logger.LogWarning("Error while fetching winning team stats");
                         result.Succeeded = false;
-                        result.Errors.Add("Error while fetching winning team stats");
+                        result.Errors.Add("خطأ أثناء جلب إحصائيات الفريق الفائز");
                         return result;
                     }
 
@@ -312,7 +332,7 @@ namespace Stack.ServiceLayer.Methods.Games
                     {
                         _logger.LogWarning("Error while fetching losing team user stats");
                         result.Succeeded = false;
-                        result.Errors.Add("Error while fetching losing team user stats");
+                        result.Errors.Add("خطأ أثناء جلب إحصائيات المستخدمين في الفريق الخاسر");
                         return result;
                     }
 
@@ -350,7 +370,6 @@ namespace Stack.ServiceLayer.Methods.Games
                     AdjustStatsForLosers(userStatsLosers);
 
                     await unitOfWork.SaveChangesAsync();
-
                     result.Succeeded = true;
                     return result;
                 }
@@ -358,7 +377,7 @@ namespace Stack.ServiceLayer.Methods.Games
                 {
                     _logger.LogWarning("Error while fetching teams members");
                     result.Succeeded = false;
-                    result.Errors.Add("Error while fetching teams members");
+                    result.Errors.Add("خطأ أثناء جلب أعضاء الفرق");
                     return result;
                 }
             }
@@ -366,13 +385,13 @@ namespace Stack.ServiceLayer.Methods.Games
             {
                 _logger.LogError(ex, "Exception adjusting status for users");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء تعديل حالة المستخدمين");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
         }
 
-        private void AdjustStatsForWinners(
+        private async void AdjustStatsForWinners(
             List<UserStats> userStats,
             // List<Stats> groupStats,
             long streakThreshold,
@@ -389,7 +408,6 @@ namespace Stack.ServiceLayer.Methods.Games
                     stats.WinningStreak >= streakThreshold ? winStreakBonus : regularWinBonus;
 
                 unitOfWork.UserStatsManager.UpdateAsync(stats);
-                unitOfWork.SaveChangesAsync();
             }
 
             // foreach (var stats in groupStats)
@@ -404,7 +422,7 @@ namespace Stack.ServiceLayer.Methods.Games
             // }
         }
 
-        private void AdjustStatsForLosers(List<UserStats> userStats)
+        private async void AdjustStatsForLosers(List<UserStats> userStats)
         {
             foreach (var stats in userStats)
             {
@@ -414,7 +432,6 @@ namespace Stack.ServiceLayer.Methods.Games
                 stats.PlayerLevel -= 1;
 
                 unitOfWork.UserStatsManager.UpdateAsync(stats);
-                unitOfWork.SaveChangesAsync();
             }
 
             // foreach (var stats in groupStats)
@@ -471,7 +488,7 @@ namespace Stack.ServiceLayer.Methods.Games
                     {
                         _logger.LogWarning($"Game with ID {gameID} not found");
                         result.Succeeded = false;
-                        result.Errors.Add($"Game with ID {gameID} not found");
+                        result.Errors.Add($"لم يتم العثور على اللعبة بالمعرّف {gameID}");
                         return result;
                     }
                 }
@@ -479,8 +496,8 @@ namespace Stack.ServiceLayer.Methods.Games
                 {
                     _logger.LogWarning("Unauthorized access: User ID not found");
                     result.Succeeded = false;
-                    result.Errors.Add("Unauthorized");
-                    result.Errors.Add("غير مُصرَّح به");
+                    // result.Errors.Add("Unauthorized");
+                    result.Errors.Add("دخول غير مُصرح به: لم يتم العثور على معرّف المستخدم");
                     return result;
                 }
             }
@@ -488,13 +505,13 @@ namespace Stack.ServiceLayer.Methods.Games
             {
                 _logger.LogError(ex, "Exception deleting game");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("خطأ أثناء حذف اللعبة");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
         }
 
-        public async Task<ApiResponse<List<GameHistoryDTO>>> GetRecentGames()
+        public async Task<ApiResponse<List<GameHistoryDTO>>> GetRecentGames(int pageNumber)
         {
             ApiResponse<List<GameHistoryDTO>> result = new ApiResponse<List<GameHistoryDTO>>();
 
@@ -504,7 +521,10 @@ namespace Stack.ServiceLayer.Methods.Games
 
                 if (userID != null)
                 {
-                    var gameHistory = await unitOfWork.GameManager.GetUserGameHistory(userID);
+                    var gameHistory = await unitOfWork.GameManager.GetUserGameHistory(
+                        userID,
+                        pageNumber
+                    );
                     result.Succeeded = true;
                     result.Data = gameHistory;
                     return result;
@@ -522,13 +542,15 @@ namespace Stack.ServiceLayer.Methods.Games
             {
                 _logger.LogError(ex, "Exception fetching recent games for current user");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء جلب الألعاب الأخيرة للمستخدم الحالي");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
         }
 
-        public async Task<ApiResponse<List<GameHistoryDTO>>> GetUserGameHistoryInGroup(long groupID)
+        public async Task<ApiResponse<List<GameHistoryDTO>>> GetUserGameHistoryInGroup(
+            GameHistoryModel model
+        )
         {
             ApiResponse<List<GameHistoryDTO>> result = new ApiResponse<List<GameHistoryDTO>>();
 
@@ -538,10 +560,7 @@ namespace Stack.ServiceLayer.Methods.Games
 
                 if (userID != null)
                 {
-                    var gameHistory = await unitOfWork.GameManager.GetUserGameHistoryInGroup(
-                        userID,
-                        groupID
-                    );
+                    var gameHistory = await unitOfWork.GameManager.GetUserGameHistoryInGroup(userID,model);
                     if (gameHistory != null)
                     {
                         result.Succeeded = true;
@@ -552,7 +571,7 @@ namespace Stack.ServiceLayer.Methods.Games
                     {
                         _logger.LogWarning("unable to get user games for this group");
                         result.Succeeded = false;
-                        result.Errors.Add("unable to get user games for this group");
+                        result.Errors.Add("غير قادر على الحصول على ألعاب المستخدم لهذا الفريق");
                         return result;
                     }
                 }
@@ -569,7 +588,7 @@ namespace Stack.ServiceLayer.Methods.Games
             {
                 _logger.LogError(ex, "Exception fetching recent games for current user");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء جلب الألعاب الأخيرة للمستخدم الحالي.");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }

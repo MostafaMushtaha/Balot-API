@@ -10,7 +10,6 @@ namespace Stack.Entities.DatabaseEntities.User
 {
     public class ApplicationUser : IdentityUser
     {
-        [Column(TypeName = "varchar(70)")]
         public string FullName { get; set; }
         public string Email { get; set; }
         public string ReferenceNumber { get; set; }

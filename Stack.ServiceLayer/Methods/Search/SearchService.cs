@@ -1,5 +1,4 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -8,20 +7,25 @@ using Stack.DTOs;
 using Stack.DTOs.Enums;
 using Stack.DTOs.Requests.Search;
 using Stack.DTOs.Responses.Search;
+using Stack.Repository.Common;
 
 namespace Stack.ServiceLayer.Methods.users
 {
-  public class SearchService : ISearchService
+    public class SearchService : ISearchService
     {
-
         private readonly IUnitOfWork unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration config;
         private readonly IMapper mapper;
         private readonly ILogger<ISearchService> _logger;
 
-
-        public SearchService(IUnitOfWork unitOfWork, IConfiguration config, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<ISearchService> logger)
+        public SearchService(
+            IUnitOfWork unitOfWork,
+            IConfiguration config,
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<ISearchService> logger
+        )
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
@@ -30,27 +34,47 @@ namespace Stack.ServiceLayer.Methods.users
             _logger = logger;
         }
 
-
         public async Task<ApiResponse<List<SearchResultsModel>>> SearchUsers(SearchModel model)
         {
-            ApiResponse<List<SearchResultsModel>> result = new ApiResponse<List<SearchResultsModel>>();
+            ApiResponse<List<SearchResultsModel>> result =
+                new ApiResponse<List<SearchResultsModel>>();
+
             try
             {
-                var searchResults = await unitOfWork.UserManager.SearchUsers(model.Content);
+                var userID = await HelperFunctions.GetUserID(_httpContextAccessor);
 
-                if (searchResults is not null)
+                if (userID != null)
                 {
-                    _logger.LogInformation("{keyword} searched", model.Content);
-                    result.Succeeded = true;
-                    result.Data = searchResults;
-                    return result;
+                    var searchResults = await unitOfWork.UserManager.SearchUsers(
+                        model.Content,
+                        userID
+                    );
+
+                    if (searchResults is not null)
+                    {
+                        _logger.LogInformation("{keyword} searched", model.Content);
+                        result.Succeeded = true;
+                        result.Data = searchResults;
+                        return result;
+                    }
+                    else
+                    {
+                        _logger.LogInformation(
+                            "{keyword} searched - No user results",
+                            model.Content
+                        );
+                        result.Succeeded = false;
+                        // result.Errors.Add("No results found");
+                        result.Errors.Add("لم يتم العثور على نتائج.");
+                        return result;
+                    }
                 }
                 else
                 {
-                    _logger.LogInformation("{keyword} searched - No user results", model.Content);
+                    _logger.LogWarning("Unauthorized access: User ID not found");
                     result.Succeeded = false;
-                    result.Errors.Add("No results found");
-                    result.Errors.Add("لم يتم العثور على نتائج.");
+                    // result.Errors.Add("Unauthorized");
+                    result.Errors.Add("غير مُصرَّح به");
                     return result;
                 }
             }
@@ -58,12 +82,10 @@ namespace Stack.ServiceLayer.Methods.users
             {
                 _logger.LogError(ex, "Exception searching");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء البحث");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
         }
-
     }
-
 }

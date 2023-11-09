@@ -25,6 +25,6 @@ namespace Stack.DTOs.Responses.Game
     public class TeamMemberDTO
     {
         public string UserID { get; set; }
-        public string UserName { get; set; }
+        public string Fullname { get; set; }
     }
 }

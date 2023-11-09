@@ -27,6 +27,7 @@ namespace Stack.Core.Managers.Users
                     t =>
                         new UserFriendListModel
                         {
+                            ID = t.Friend.Id,
                             FriendName = t.Friend.FullName,
                             ReferenceNumber = t.Friend.ReferenceNumber
                         }

@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Stack.Entities.DomainEntities.Groups;
 using Stack.Entities.DatabaseEntities.Games;
+using Stack.Entities.Enums.Modules.Games;
 
 namespace Stack.Core.Managers.Modules.Games
 {
@@ -34,7 +35,7 @@ namespace Stack.Core.Managers.Modules.Games
         public async Task<GameRound> GetLatestRoundForGame(long gameID)
         {
             return await dbSet
-                .Where(gr => gr.GameID == gameID)
+                .Where(gr => gr.GameID == gameID && gr.Game.Status == (int)GamesStatus.Ended)
                 .OrderByDescending(gr => gr.ID)
                 .FirstOrDefaultAsync();
         }

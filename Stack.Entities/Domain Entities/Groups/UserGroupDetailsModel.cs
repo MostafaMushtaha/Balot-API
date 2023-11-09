@@ -13,7 +13,7 @@ namespace Stack.Entities.DomainEntities.Groups
 {
     public class UserGroupDetailsModel
     {
-        public List<Media> Media { get; set; }
+        public List<Media>? Media { get; set; }
         public List<Group_MemberDTO>? GroupMembers { get; set; }
     }
 }

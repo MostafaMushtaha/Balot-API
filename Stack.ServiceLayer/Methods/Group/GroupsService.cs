@@ -55,7 +55,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                     {
                         result.Succeeded = false;
                         result.Errors.Add(
-                            "Failed to create group.Similar group found, please try again!"
+                            "فشل في إنشاء المجموعة. تم العثور على مجموعة مماثلة، يرجى المحاولة مرة أخرى!"
                         );
                         return result;
                     }
@@ -101,7 +101,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                                         groupCreationResult.ID
                                     );
                                     result.Succeeded = false;
-                                    result.Errors = addGroupMembersResult.Errors;
+                                    result.Errors.Add("فشل في إضافة أعضاء للمجموعة");
                                     return result;
                                 }
                                 _logger.LogInformation(
@@ -120,7 +120,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                         else
                         {
                             result.Succeeded = false;
-                            result.Errors.Add("Exception occured");
+                            result.Errors.Add("حدث استثناء");
                             return result;
                         }
                     }
@@ -128,7 +128,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                     {
                         _logger.LogWarning("Group owner creation failed", userID);
                         result.Succeeded = false;
-                        result.Errors.Add("Group owner creation failed");
+                        result.Errors.Add("فشل إنشاء مالك المجموعة.");
                         return result;
                     }
                 }
@@ -145,7 +145,7 @@ namespace Stack.ServiceLayer.Methods.Groups
             {
                 _logger.LogError(ex, "Exception occurred while creating the group");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("حدث استثناء أثناء إنشاء المجموعة");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }

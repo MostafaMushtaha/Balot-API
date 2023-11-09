@@ -61,6 +61,8 @@ namespace Stack.API
                 u.Password.RequireUppercase = false;
                 u.Password.RequireNonAlphanumeric = false;
                 u.Password.RequiredLength = 8;
+
+                u.User.AllowedUserNameCharacters= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ابتثجحخدذرزسشصضطظعغفقكلمنهوي";
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddUserManager<ApplicationUserManager>()

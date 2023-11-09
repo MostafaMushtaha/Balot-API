@@ -196,7 +196,8 @@ namespace Stack.ServiceLayer.Methods.Auth
                     new[]
                     {
                         new Claim(ClaimTypes.Name, user.UserName),
-                        new Claim(ClaimTypes.NameIdentifier, user.Id)
+                        new Claim(ClaimTypes.NameIdentifier, user.Id),
+                        new Claim("given_name", user.FullName)
                     }
                 );
 

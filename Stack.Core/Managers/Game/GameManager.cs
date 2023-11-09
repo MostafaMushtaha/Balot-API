@@ -3,6 +3,8 @@ using Stack.DAL;
 using Stack.DTOs.Responses.Game;
 using Stack.Entities.DatabaseEntities.Games;
 using Stack.Entities.DatabaseEntities.Groups;
+using Stack.Entities.DomainEntities.Games;
+using Stack.Entities.Enums.Modules.Games;
 using Stack.Entities.Enums.Modules.User;
 using Stack.Repository;
 using System;
@@ -36,10 +38,16 @@ namespace Stack.Core.Managers.Games
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<GameHistoryDTO>> GetUserGameHistory(string userId)
+        public async Task<List<GameHistoryDTO>> GetUserGameHistory(string userId, int pageNumber)
         {
+            const int pageSize = 10; // You can make this configurable if needed
+            var skip = (pageNumber - 1) * pageSize;
+
             var gameHistories = await context.Game_Members
-                .Where(gm => gm.GroupMember.UserID == userId)
+                .Where(
+                    gm =>
+                        gm.GroupMember.UserID == userId && gm.Game.Status == (int)GamesStatus.Ended
+                )
                 .Select(
                     gm =>
                         new
@@ -57,7 +65,7 @@ namespace Stack.Core.Managers.Games
                                         new TeamMemberDTO
                                         {
                                             UserID = gm2.GroupMember.UserID.ToString(),
-                                            UserName = gm2.GroupMember.User.UserName
+                                            Fullname = gm2.GroupMember.User.FullName
                                         }
                                 ),
                             SecondTeamMembers = gm.Game.GameMembers
@@ -67,13 +75,15 @@ namespace Stack.Core.Managers.Games
                                         new TeamMemberDTO
                                         {
                                             UserID = gm2.GroupMember.UserID.ToString(),
-                                            UserName = gm2.GroupMember.User.UserName
+                                            Fullname = gm2.GroupMember.User.FullName
                                         }
                                 ),
                             UserTeam = gm.Team
                         }
                 )
                 .OrderByDescending(gm => gm.CreationDate)
+                .Skip(skip) // Skip the previous pages' items
+                .Take(pageSize) // Take only items for the current page
                 .ToListAsync();
 
             var gameHistoryDTOs = gameHistories
@@ -108,11 +118,19 @@ namespace Stack.Core.Managers.Games
 
         public async Task<List<GameHistoryDTO>> GetUserGameHistoryInGroup(
             string userId,
-            long groupId
+            GameHistoryModel model
         )
         {
+            int pageSize = 10;
+            int skip = (model.PageNumber - 1) * pageSize;
+
             var gameHistories = await context.Game_Members
-                .Where(gm => gm.GroupMember.UserID == userId && gm.Game.GroupID == groupId)
+                .Where(
+                    gm =>
+                        gm.GroupMember.UserID == userId
+                        && gm.Game.GroupID == model.GroupID
+                        && gm.Game.Status == (int)GamesStatus.Ended
+                )
                 .Select(
                     gm =>
                         new
@@ -130,7 +148,7 @@ namespace Stack.Core.Managers.Games
                                         new TeamMemberDTO
                                         {
                                             UserID = gm2.GroupMember.UserID.ToString(),
-                                            UserName = gm2.GroupMember.User.UserName
+                                            Fullname = gm2.GroupMember.User.FullName
                                         }
                                 ),
                             SecondTeamMembers = gm.Game.GameMembers
@@ -140,13 +158,15 @@ namespace Stack.Core.Managers.Games
                                         new TeamMemberDTO
                                         {
                                             UserID = gm2.GroupMember.UserID.ToString(),
-                                            UserName = gm2.GroupMember.User.UserName
+                                            Fullname = gm2.GroupMember.User.FullName
                                         }
                                 ),
                             UserTeam = gm.Team
                         }
                 )
-                .OrderByDescending(gm => gm.CreationDate) 
+                .OrderByDescending(gm => gm.CreationDate)
+                .Skip(skip)
+                .Take(pageSize)
                 .ToListAsync();
 
             var gameHistoryDTOs = gameHistories

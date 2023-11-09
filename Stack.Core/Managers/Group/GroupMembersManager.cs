@@ -110,6 +110,7 @@ namespace Stack.Core.Managers.Modules.Groups
             var groupMedia = await dbSet
                 .Where(gm => gm.GroupID == GroupID)
                 .SelectMany(gm => gm.Group.Media)
+                .Distinct()
                 .ToListAsync();
 
             return new UserGroupDetailsModel { Media = groupMedia, GroupMembers = groupMembers };

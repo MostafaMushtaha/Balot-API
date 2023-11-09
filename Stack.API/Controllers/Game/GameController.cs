@@ -6,6 +6,7 @@ using Serilog.Sinks.Loki;
 using Stack.API.Controllers.Common;
 using Stack.DTOs.Requests.Modules.Auth;
 using Stack.DTOs.Requests.Modules.Games;
+using Stack.Entities.DomainEntities.Games;
 using Stack.ServiceLayer.Methods.Games;
 using ILogger = Serilog.ILogger;
 
@@ -35,15 +36,15 @@ namespace Stack.API.Controllers.Games
         {
             return await GetResponseHandler(async () => await service.DeleteGame(gameID));
         }
-        [HttpGet("GetRecentGames")]
-        public async Task<IActionResult> GetRecentGames()
+        [HttpGet("GetRecentGames/{pageNumber}")]
+        public async Task<IActionResult> GetRecentGames(int pageNumber)
         {
-            return await GetResponseHandler(async () => await service.GetRecentGames());
+            return await GetResponseHandler(async () => await service.GetRecentGames(pageNumber));
         }
-        [HttpGet("GetUserGameHistoryInGroup/{groupID}")]
-        public async Task<IActionResult> GetUserGameHistoryInGroup(long groupID)
+        [HttpPost("GetUserGameHistoryInGroup")]
+        public async Task<IActionResult> GetUserGameHistoryInGroup(GameHistoryModel model)
         {
-            return await GetResponseHandler(async () => await service.GetUserGameHistoryInGroup(groupID));
+            return await AddItemResponseHandler(async () => await service.GetUserGameHistoryInGroup(model));
         }
 
     }

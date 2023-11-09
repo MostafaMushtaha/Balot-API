@@ -115,7 +115,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                 {
                     _logger.LogWarning("Unauthorized access: User ID not found");
                     result.Succeeded = false;
-                    result.Errors.Add("Unauthorized");
+                    // result.Errors.Add("Unauthorized");
                     result.Errors.Add("غير مُصرَّح به");
                     return result;
                 }
@@ -124,7 +124,7 @@ namespace Stack.ServiceLayer.Methods.Groups
             {
                 _logger.LogError(ex, "Exception fetching user groups");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("حدث استثناء أثناء جلب مجموعات المستخدم");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
@@ -164,7 +164,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                 {
                     _logger.LogWarning("Unauthorized access: User ID not found");
                     result.Succeeded = false;
-                    result.Errors.Add("Unauthorized");
+                    // result.Errors.Add("Unauthorized");
                     result.Errors.Add("غير مُصرَّح به");
                     return result;
                 }
@@ -173,7 +173,7 @@ namespace Stack.ServiceLayer.Methods.Groups
             {
                 _logger.LogError(ex, "Exception fetching user groups");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء استرجاع مجموعات المستخدم");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
@@ -202,7 +202,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                     );
                     result.Succeeded = false;
                     result.Errors.Add(
-                        "Not enough members (less than 4) found for the given group."
+                        "لم يتم العثور على عدد كافٍ من الأعضاء (أقل من 4) للمجموعة المعطاة."
                     );
                     return result;
                 }
@@ -227,7 +227,7 @@ namespace Stack.ServiceLayer.Methods.Groups
             {
                 _logger.LogError(ex, $"Exception fetching members for group with ID {groupID}");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء جلب أعضاء المجموعة بمعرف الهوية");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
@@ -257,7 +257,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                                 groupMemberID
                             );
                             result.Succeeded = false;
-                            result.Errors.Add("Unauthorized removal attempt.");
+                            result.Errors.Add("محاولة إزالة غير مصرح بها");
                             return result;
                         }
 
@@ -274,7 +274,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                             groupMemberID
                         );
                         result.Succeeded = false;
-                        result.Errors.Add("Member not found");
+                        // result.Errors.Add("Member not found");
                         result.Errors.Add("العضو غير موجود");
                         return result;
                     }
@@ -283,7 +283,7 @@ namespace Stack.ServiceLayer.Methods.Groups
                 {
                     _logger.LogWarning("Unauthorized access: User ID not found");
                     result.Succeeded = false;
-                    result.Errors.Add("Unauthorized");
+                    // result.Errors.Add("Unauthorized");
                     result.Errors.Add("غير مُصرَّح به");
                     return result;
                 }
@@ -292,7 +292,7 @@ namespace Stack.ServiceLayer.Methods.Groups
             {
                 _logger.LogError(ex, "Exception removing group member");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء إزالة عضو من المجموعة");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }

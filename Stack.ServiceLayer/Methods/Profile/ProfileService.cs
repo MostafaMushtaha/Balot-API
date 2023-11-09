@@ -81,7 +81,7 @@ namespace Stack.ServiceLayer.Methods.UserProfiles
                         {
                             _logger.LogWarning("Profile not found {user} - {profile}", userID);
                             result.Succeeded = false;
-                            result.Errors.Add("Profile not found or an Exception occured");
+                            // result.Errors.Add("Profile not found or an Exception occured");
                             result.Errors.Add("الملف الشخصي غير موجود أو حدث استثناء");
                             return result;
                         }
@@ -91,7 +91,7 @@ namespace Stack.ServiceLayer.Methods.UserProfiles
                 {
                     _logger.LogWarning("Unauthorized access: user ID not found");
                     result.Succeeded = false;
-                    result.Errors.Add("Unauthorized");
+                    // result.Errors.Add("Unauthorized");
                     result.Errors.Add("غير مُصرَّح به");
                     return result;
                 }
@@ -100,7 +100,7 @@ namespace Stack.ServiceLayer.Methods.UserProfiles
             {
                 _logger.LogError(ex, "Exception fetching profile");
                 result.Succeeded = false;
-                result.Errors.Add(ex.Message);
+                result.Errors.Add("استثناء أثناء جلب الملف الشخصي");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }
