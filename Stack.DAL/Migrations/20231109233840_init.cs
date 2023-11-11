@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Stack.DAL.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,15 +44,13 @@ namespace Stack.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FullName = table.Column<string>(type: "varchar(70)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     ReferenceNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Language = table.Column<int>(type: "int", nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     VerificationMethod = table.Column<int>(type: "int", nullable: false),
-                    PlayerLevel = table.Column<long>(type: "bigint", nullable: false),
-                    WinningStreak = table.Column<long>(type: "bigint", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Birthdate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -331,6 +329,8 @@ namespace Stack.DAL.Migrations
                     Wins = table.Column<long>(type: "bigint", nullable: false),
                     Loses = table.Column<long>(type: "bigint", nullable: false),
                     TotalGames = table.Column<long>(type: "bigint", nullable: false),
+                    PlayerLevel = table.Column<long>(type: "bigint", nullable: false),
+                    WinningStreak = table.Column<long>(type: "bigint", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -347,13 +347,13 @@ namespace Stack.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Game",
+                name: "Games",
                 columns: table => new
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Total = table.Column<long>(type: "bigint", nullable: false),
                     GroupID = table.Column<long>(type: "bigint", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -361,9 +361,9 @@ namespace Stack.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Game", x => x.ID);
+                    table.PrimaryKey("PK_Games", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Game_Groups_GroupID",
+                        name: "FK_Games_Groups_GroupID",
                         column: x => x.GroupID,
                         principalTable: "Groups",
                         principalColumn: "ID");
@@ -424,7 +424,7 @@ namespace Stack.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameRound",
+                name: "GameRounds",
                 columns: table => new
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
@@ -439,16 +439,16 @@ namespace Stack.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameRound", x => x.ID);
+                    table.PrimaryKey("PK_GameRounds", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_GameRound_Game_GameID",
+                        name: "FK_GameRounds_Games_GameID",
                         column: x => x.GameID,
-                        principalTable: "Game",
+                        principalTable: "Games",
                         principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Game_Member",
+                name: "Game_Members",
                 columns: table => new
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
@@ -457,7 +457,6 @@ namespace Stack.DAL.Migrations
                     GameID = table.Column<long>(type: "bigint", nullable: false),
                     Team = table.Column<int>(type: "int", nullable: false),
                     IsWinner = table.Column<bool>(type: "bit", nullable: false),
-                    GameID1 = table.Column<long>(type: "bigint", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -465,19 +464,14 @@ namespace Stack.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Game_Member", x => x.ID);
+                    table.PrimaryKey("PK_Game_Members", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Game_Member_Game_GameID",
+                        name: "FK_Game_Members_Games_GameID",
                         column: x => x.GameID,
-                        principalTable: "Game",
+                        principalTable: "Games",
                         principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_Game_Member_Game_GameID1",
-                        column: x => x.GameID1,
-                        principalTable: "Game",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Game_Member_Group_Member_GroupMemberID",
+                        name: "FK_Game_Members_Group_Member_GroupMemberID",
                         column: x => x.GroupMemberID,
                         principalTable: "Group_Member",
                         principalColumn: "ID",
@@ -488,7 +482,8 @@ namespace Stack.DAL.Migrations
                 name: "Media",
                 columns: table => new
                 {
-                    ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     GroupID = table.Column<long>(type: "bigint", nullable: false),
                     CreatorID = table.Column<long>(type: "bigint", nullable: false),
                     ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -523,6 +518,8 @@ namespace Stack.DAL.Migrations
                     Wins = table.Column<long>(type: "bigint", nullable: false),
                     Loses = table.Column<long>(type: "bigint", nullable: false),
                     TotalGames = table.Column<long>(type: "bigint", nullable: false),
+                    GroupMemberLevel = table.Column<long>(type: "bigint", nullable: false),
+                    WinningStreak = table.Column<long>(type: "bigint", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -588,31 +585,24 @@ namespace Stack.DAL.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Game_GroupID",
-                table: "Game",
-                column: "GroupID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Game_Member_GameID",
-                table: "Game_Member",
+                name: "IX_Game_Members_GameID",
+                table: "Game_Members",
                 column: "GameID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Game_Member_GameID1",
-                table: "Game_Member",
-                column: "GameID1",
-                unique: true,
-                filter: "[GameID1] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Game_Member_GroupMemberID",
-                table: "Game_Member",
+                name: "IX_Game_Members_GroupMemberID",
+                table: "Game_Members",
                 column: "GroupMemberID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameRound_GameID",
-                table: "GameRound",
+                name: "IX_GameRounds_GameID",
+                table: "GameRounds",
                 column: "GameID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Games_GroupID",
+                table: "Games",
+                column: "GroupID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Group_Member_GroupID",
@@ -693,10 +683,10 @@ namespace Stack.DAL.Migrations
                 name: "Friends");
 
             migrationBuilder.DropTable(
-                name: "Game_Member");
+                name: "Game_Members");
 
             migrationBuilder.DropTable(
-                name: "GameRound");
+                name: "GameRounds");
 
             migrationBuilder.DropTable(
                 name: "Media");
@@ -723,7 +713,7 @@ namespace Stack.DAL.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Game");
+                name: "Games");
 
             migrationBuilder.DropTable(
                 name: "Profiles");

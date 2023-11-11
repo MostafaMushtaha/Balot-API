@@ -12,8 +12,8 @@ using Stack.DAL;
 namespace Stack.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231024002750_Initial-Migration")]
-    partial class InitialMigration
+    [Migration("20231109233840_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -242,14 +242,14 @@ namespace Stack.DAL.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Total")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.HasIndex("GroupID");
 
-                    b.ToTable("Game");
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Games.Game_Member", b =>
@@ -267,9 +267,6 @@ namespace Stack.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<long>("GameID")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("GameID1")
                         .HasColumnType("bigint");
 
                     b.Property<long>("GroupMemberID")
@@ -291,13 +288,9 @@ namespace Stack.DAL.Migrations
 
                     b.HasIndex("GameID");
 
-                    b.HasIndex("GameID1")
-                        .IsUnique()
-                        .HasFilter("[GameID1] IS NOT NULL");
-
                     b.HasIndex("GroupMemberID");
 
-                    b.ToTable("Game_Member");
+                    b.ToTable("Game_Members");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Games.GameRound", b =>
@@ -333,13 +326,16 @@ namespace Stack.DAL.Migrations
 
                     b.HasIndex("GameID");
 
-                    b.ToTable("GameRound");
+                    b.ToTable("GameRounds");
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.GroupMedia.Media", b =>
                 {
-                    b.Property<string>("ID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"), 1L, 1);
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -561,7 +557,7 @@ namespace Stack.DAL.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("varchar(70)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
@@ -595,9 +591,6 @@ namespace Stack.DAL.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<long>("PlayerLevel")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("ReferenceNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -620,9 +613,6 @@ namespace Stack.DAL.Migrations
 
                     b.Property<int>("VerificationMethod")
                         .HasColumnType("int");
-
-                    b.Property<long>("WinningStreak")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -691,6 +681,9 @@ namespace Stack.DAL.Migrations
                     b.Property<long>("GroupMemberID")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("GroupMemberLevel")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("Loses")
                         .HasColumnType("bigint");
 
@@ -701,6 +694,9 @@ namespace Stack.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("TotalGames")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("WinningStreak")
                         .HasColumnType("bigint");
 
                     b.Property<long>("Wins")
@@ -737,12 +733,18 @@ namespace Stack.DAL.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long>("PlayerLevel")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("TotalGames")
                         .HasColumnType("bigint");
 
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("WinningStreak")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("Wins")
                         .HasColumnType("bigint");
@@ -891,10 +893,6 @@ namespace Stack.DAL.Migrations
                         .HasForeignKey("GameID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("Stack.Entities.DatabaseEntities.Games.Game", null)
-                        .WithOne("Winner")
-                        .HasForeignKey("Stack.Entities.DatabaseEntities.Games.Game_Member", "GameID1");
 
                     b.HasOne("Stack.Entities.DatabaseEntities.Groups.Group_Member", "GroupMember")
                         .WithMany("GameMembers")
@@ -1046,9 +1044,6 @@ namespace Stack.DAL.Migrations
                     b.Navigation("GameMembers");
 
                     b.Navigation("Rounds");
-
-                    b.Navigation("Winner")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Stack.Entities.DatabaseEntities.Groups.Group", b =>

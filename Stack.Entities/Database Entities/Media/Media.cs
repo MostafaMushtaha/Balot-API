@@ -13,8 +13,6 @@ namespace Stack.Entities.DatabaseEntities.GroupMedia
 {
     public class Media : BaseEntity
     {
-        public string ID { get; set; }
-
         public long GroupID { get; set; }
         public long CreatorID { get; set; }
         public string? ImageURL { get; set; }

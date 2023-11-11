@@ -13,6 +13,7 @@ using Stack.Entities.DatabaseEntities.Groups;
 using Stack.DTOs.Requests.Modules.Groups;
 using Stack.DTOs.Requests.Groups;
 using System.Text.Json;
+using Stack.Entities.DatabaseEntities.GroupMedia;
 
 namespace Stack.ServiceLayer.Methods.Groups
 {
@@ -278,6 +279,51 @@ namespace Stack.ServiceLayer.Methods.Groups
                         result.Errors.Add("العضو غير موجود");
                         return result;
                     }
+                }
+                else
+                {
+                    _logger.LogWarning("Unauthorized access: User ID not found");
+                    result.Succeeded = false;
+                    // result.Errors.Add("Unauthorized");
+                    result.Errors.Add("غير مُصرَّح به");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception removing group member");
+                result.Succeeded = false;
+                result.Errors.Add("استثناء أثناء إزالة عضو من المجموعة");
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+        public async Task<ApiResponse<List<Media>>> GetGroupMediaList(GroupMediaModel model)
+        {
+            ApiResponse<List<Media>> result = new ApiResponse<List<Media>>();
+            try
+            {
+                var userID = await HelperFunctions.GetUserID(_httpContextAccessor);
+
+                if (userID != null)
+                {
+                    var groupMediaDetails = await unitOfWork.GroupMembersManager.GetGroupMediaDetails(model);
+
+                    if (groupMediaDetails != null)
+                    {
+                        _logger.LogInformation("Group details fetched {user}", userID);
+                        result.Succeeded = true;
+                        result.Data = groupMediaDetails;
+                        return result;
+                    }
+                    else
+                    {
+                        _logger.LogError("Group Details not found {user}", userID);
+                        result.Succeeded = false;
+                        result.Errors.Add("غير مُصرَّح به");
+                        return result;
+                    }
+
                 }
                 else
                 {

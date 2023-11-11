@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using Stack.Entities.DomainEntities.Groups;
 using Stack.Entities.DatabaseEntities.User;
 using Stack.Entities.DomainEntities.Users;
+using Stack.Entities.DatabaseEntities.GroupMedia;
+using Stack.DTOs.Requests.Groups;
 
 namespace Stack.Core.Managers.Modules.Groups
 {
@@ -151,6 +153,30 @@ namespace Stack.Core.Managers.Modules.Groups
                         }
                 )
                 .ToListAsync();
+        }
+
+        public async Task<long> GetGroupMemberIdByUserAndGroup(string userId, long groupId)
+        {
+            return await dbSet
+                .Where(gm => gm.UserID == userId && gm.GroupID == groupId)
+                .Select(gm => gm.ID) // Assuming ID is the property name for GroupMemberID
+                .FirstOrDefaultAsync();
+        }
+
+
+        public async Task<List<Media>> GetGroupMediaDetails(GroupMediaModel model)
+        {
+            var PageSize = 10;
+
+            var groupMediaDetails = await dbSet
+                .Where(gm => gm.GroupID == model.GroupID)
+                .SelectMany(gm => gm.Media)
+                .OrderBy(m => m.CreationDate)
+                .Skip((model.pageNumber - 1) * PageSize)
+                .Take(PageSize)
+                .ToListAsync();
+
+            return groupMediaDetails;
         }
     }
 }

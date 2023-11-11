@@ -14,12 +14,16 @@ using Stack.DTOs.Requests.Modules.Groups;
 using Stack.DTOs.Requests.Groups;
 using System.Text.Json;
 using Stack.Entities.DatabaseEntities.User;
+using Stack.ServiceLayer.Primitives;
+using Stack.Entities.DatabaseEntities.GroupMedia;
 
 namespace Stack.ServiceLayer.Methods.Groups
 {
     public class GroupsService : IGroupsService
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediaUploader _mediaUploader;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper mapper;
         private readonly ILogger<IGroupsService> _logger;
@@ -28,12 +32,14 @@ namespace Stack.ServiceLayer.Methods.Groups
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor,
+            IMediaUploader mediaUploader,
             ILogger<IGroupsService> logger
         )
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _mediaUploader = mediaUploader;
             _logger = logger;
         }
 
@@ -199,6 +205,75 @@ namespace Stack.ServiceLayer.Methods.Groups
                 _logger.LogError(ex, "Exception adding Group members");
                 result.Succeeded = false;
                 result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+
+        public async Task<ApiResponse<bool>> AddMedia(AddGroupMediaModel model)
+        {
+            ApiResponse<bool> result = new ApiResponse<bool>();
+
+            try
+            {
+                var userID = await HelperFunctions.GetUserID(_httpContextAccessor);
+
+                if (userID != null)
+                {
+                    string mediapath = "Groups/Media";
+                    var uploadPath = await _mediaUploader.UploadMedia(mediapath, model.Media);
+
+                    if (uploadPath != null)
+                    {
+                        var groupMemberID =
+                            await unitOfWork.GroupMembersManager.GetGroupMemberIdByUserAndGroup(
+                                userID,
+                                model.GroupID
+                            );
+
+                        Media media = new Media
+                        {
+                            GroupID = model.GroupID,
+                            ImageURL = uploadPath,
+                            CreatorID = groupMemberID,
+                            CreationDate = DateTime.UtcNow
+                        };
+
+                        var creationRes = await unitOfWork.MediaManager.CreateAsync(media);
+                        if (creationRes is not null)
+                        {
+                            await unitOfWork.SaveChangesAsync();
+                            result.Succeeded = true;
+                            return result;
+                        }
+                        else
+                        {
+                            result.Succeeded = false;
+                            result.Errors.Add("Couldn't add the new media");
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("Couldn't get group member ID");
+                        return result;
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Unauthorized access: User ID not found");
+                    result.Succeeded = false;
+                    result.Errors.Add("Unauthorized");
+                    result.Errors.Add("غير مُصرَّح به");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while creating the group");
+                result.Succeeded = false;
+                result.Errors.Add("حدث استثناء أثناء إنشاء المجموعة");
                 result.ErrorType = ErrorType.SystemError;
                 return result;
             }

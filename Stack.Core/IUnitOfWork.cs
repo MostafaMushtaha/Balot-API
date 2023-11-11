@@ -27,6 +27,7 @@ namespace Stack.Core
         public GameMembersManager GameMembersManager { get; }
         public GameRoundsManager GameRoundsManager { get; }
         public GroupMembersManager GroupMembersManager { get; }
+        public MediaManager MediaManager { get; }
         public ProfileSettingsManager ProfileSettingsManager { get; }
         public NotificationsManager NotificationsManager { get; }
         public UserDeviceManager UserDeviceManager { get; }

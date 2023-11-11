@@ -15,7 +15,7 @@ namespace Stack.ServiceLayer.Methods.Groups
     {
         public Task<ApiResponse<long>> CreateGroup(GroupCreationModel model);
         public Task<ApiResponse<bool>> AddGroupMembers(List<string> members, long groupID);
-
+        public Task<ApiResponse<bool>> AddMedia(AddGroupMediaModel model);
         public Task<ApiResponse<bool>> EditGroup(GroupEditModel model);
     }
 }

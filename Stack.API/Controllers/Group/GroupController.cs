@@ -40,5 +40,10 @@ namespace Stack.API.Controllers.Groups
         {
             return await AddItemResponseHandler(async () => await service.EditGroup(model));
         }
+        [HttpPost("AddMedia")]
+        public async Task<IActionResult> AddMedia([FromForm] AddGroupMediaModel model)
+        {
+            return await AddItemResponseHandler(async () => await service.AddMedia(model));
+        }
     }
 }

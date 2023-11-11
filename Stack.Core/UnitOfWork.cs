@@ -302,6 +302,19 @@ namespace Stack.Core
                 return userStatsManager;
             }
         }
+        private MediaManager mediaManager;
+        public MediaManager MediaManager
+        {
+            get
+            {
+                if (mediaManager == null)
+                {
+                    mediaManager = new MediaManager(context);
+                }
+
+                return mediaManager;
+            }
+        }
         
     }
 }

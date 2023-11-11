@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Serilog;
 using Serilog.Sinks.Loki;
 using Stack.API.Controllers.Common;
+using Stack.DTOs.Requests.Groups;
 using Stack.DTOs.Requests.Modules.Auth;
 using Stack.DTOs.Requests.Modules.Groups;
 using Stack.ServiceLayer.Methods.Groups;
@@ -54,6 +55,13 @@ namespace Stack.API.Controllers.Groups
         {
             return await AddItemResponseHandler(
                 async () => await service.GetSelectedMembers(groupID)
+            );
+        }
+        [HttpPost("GetGroupMediaDetails")]
+        public async Task<IActionResult> GetGroupMediaDetails(GroupMediaModel model)
+        {
+            return await AddItemResponseHandler(
+                async () => await service.GetGroupMediaList(model)
             );
         }
     }
